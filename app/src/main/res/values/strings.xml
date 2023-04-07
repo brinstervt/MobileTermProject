@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">TermProject</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="dropdown">
+        <item>All Books</item>
+        <item>Currently Reading</item>
+        <item>Plan to Read</item>
+        <item>On Hold</item>
+        <item>Completed</item>
+    </string-array>
+</resources>
