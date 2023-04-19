@@ -23,4 +23,9 @@
         <item>⭐⭐⭐⭐</item>
         <item>⭐⭐⭐⭐⭐</item>
     </string-array>
+    <string-array name="tags">
+        <item>fiction</item>
+        <item>classic</item>
+        <item>popular</item>
+    </string-array>
 </resources>

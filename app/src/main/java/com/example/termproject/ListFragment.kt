@@ -24,8 +24,12 @@ class ListFragment : Fragment() {
         binding = FragmentListBinding.inflate(layoutInflater)
         val view = binding.root
 
-        val searchView = view.findViewById<SearchView>(R.id.search_view)
+        val searchBtn = view.findViewById<ImageButton>(R.id.search)
         val shelfSelect = view.findViewById<TextInputLayout>(R.id.shelf_select)
+
+        searchBtn.setOnClickListener{
+            view.findNavController().navigate(R.id.action_listFragment_to_searchFragment)
+        }
 
         val bookList = view.findViewById<RecyclerView>(R.id.book_list)
         val adapter = BookListAdapter()
@@ -44,6 +48,9 @@ class ListFragment : Fragment() {
         val bookItemList:List<BookItem> = listOf<BookItem>(book1, book2, book3, book4, book5, book6)
 
         adapter.setBooks(bookItemList)
+
+
+
 
         setupExposedDropdownMenu(shelfSelect)
 
@@ -103,8 +110,7 @@ class ListFragment : Fragment() {
 
 
             holder.itemView.setOnClickListener {
-                holder.view.findNavController().navigate(R.id.action_listFragment_to_bookFragment,
-                )
+                holder.view.findNavController().navigate(R.id.action_listFragment_to_bookFragment)
             }
         }
 
