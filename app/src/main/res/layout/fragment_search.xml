@@ -7,13 +7,22 @@
     android:layout_height="match_parent"
     tools:context=".SearchFragment">
 
+    <ImageButton
+        android:id="@+id/home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        android:src="@drawable/baseline_home_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="home" />
+
     <SearchView
         android:id="@+id/searchbar"
-        android:layout_width="match_parent"
+        android:layout_width="360dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <Spinner
@@ -22,8 +31,8 @@
         android:layout_height="48dp"
         android:layout_marginStart="15dp"
         android:entries="@array/tags"
-        app:layout_constraintTop_toBottomOf="@+id/searchbar"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/filter_list"
@@ -31,11 +40,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:orientation="horizontal"
+        android:scrollbars="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/filter"
-        app:layout_constraintTop_toBottomOf="@+id/searchbar"
-        android:scrollbars="horizontal"/>
+        app:layout_constraintTop_toBottomOf="@+id/searchbar" />
 
     <TextView
         android:id="@+id/result_count"
@@ -53,13 +62,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:orientation="vertical"
+        android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/result_count"
-        android:scrollbars="vertical"/>
-
-
+        app:layout_constraintTop_toBottomOf="@+id/result_count" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

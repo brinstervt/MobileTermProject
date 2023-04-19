@@ -7,11 +7,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.RatingBar
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -24,10 +22,11 @@ class BookFragment : Fragment() {
 
     private lateinit var binding: FragmentBookBinding
 
+    @Suppress("DEPRECATION")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentBookBinding.inflate(layoutInflater)
         val view = binding.root
@@ -59,6 +58,11 @@ class BookFragment : Fragment() {
         reviewAdapter.setReviews(reviewList)
 
 
+        val homeBtn = view.findViewById<ImageButton>(R.id.home)
+        homeBtn.setOnClickListener {
+            view.findNavController().navigate(R.id.action_bookFragment_to_listFragment)
+        }
+
         val reviewFilter = view.findViewById<Spinner>(R.id.review_filter)
 
         reviewFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
@@ -86,6 +90,7 @@ class BookFragment : Fragment() {
 
         private var tags = listOf<TagItem>()
 
+        @SuppressLint("NotifyDataSetChanged")
         internal fun setTags(tagsList:List<TagItem>) {
             tags  = tagsList
             notifyDataSetChanged()

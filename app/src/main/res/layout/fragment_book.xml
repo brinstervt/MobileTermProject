@@ -10,17 +10,29 @@
     android:layout_height="match_parent"
     tools:context=".BookFragment" >
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/baseline_home_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="home" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/info_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="20dp">
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            app:layout_constraintTop_toBottomOf="@+id/home">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -37,7 +49,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
-                    tools:src="@drawable/_1984" />
+                    tools:src="@drawable/_1984"
+                    android:contentDescription="cover" />
 
                 <TextView
                     android:id="@+id/title"
@@ -84,6 +97,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/book_rating"
                     app:layout_constraintBottom_toBottomOf="@+id/cover_image"
                     app:layout_constraintStart_toEndOf="@+id/cover_image"/>
+
+
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -140,7 +155,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
-                        android:background="@android:color/transparent" />
+                        android:background="@android:color/transparent"
+                        android:contentDescription="expand" />
 
                 </com.ms.square.android.expandabletextview.ExpandableTextView>
 

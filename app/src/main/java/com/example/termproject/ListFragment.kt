@@ -1,5 +1,6 @@
 package com.example.termproject
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,10 +18,12 @@ class ListFragment : Fragment() {
 
     private lateinit var binding : FragmentListBinding
 
+    @Suppress("DEPRECATION")
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentListBinding.inflate(layoutInflater)
         val view = binding.root
 
@@ -37,12 +40,15 @@ class ListFragment : Fragment() {
         bookList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
 
-        val book1: BookItem = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat())
-        val book2: BookItem = BookItem("The Catcher in the Rye", "J.D. Salinger", "1951", 4.0.toFloat())
-        val book3: BookItem = BookItem("Brave New World", "Aldous Huxley", "1932", 3.0.toFloat())
-        val book4: BookItem = BookItem("1984", "George Orwell", "1949", 5.0.toFloat())
-        val book5: BookItem = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat())
-        val book6: BookItem = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat())
+
+
+        val book1 = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.great_gatsby))
+        val book2 = BookItem("The Catcher in the Rye", "J.D. Salinger", "1951", 4.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable.catcher_in_the_rye))
+        val book3 = BookItem("Brave New World", "Aldous Huxley", "1932", 3.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable.brave_new_world))
+        val book4 = BookItem("1984", "George Orwell", "1949", 5.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable._1984))
+        val book5 = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.jane_erye))
+        val book6 = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.pride_and_prejudice))
+
 
 
         val bookItemList:List<BookItem> = listOf<BookItem>(book1, book2, book3, book4, book5, book6)
@@ -68,7 +74,7 @@ class ListFragment : Fragment() {
         autoCompleteTextView?.setText(adapter.getItem(0), false)
 
         autoCompleteTextView?.setOnItemClickListener { _, _, position, _ ->
-            val selectedItem = adapter.getItem(position)
+//            val selectedItem = adapter.getItem(position)
             // Handle the selected item here
         }
     }
@@ -79,6 +85,7 @@ class ListFragment : Fragment() {
         //a list of the movie items to load into the RecyclerView
         private var books = emptyList<BookItem>()
 
+        @SuppressLint("NotifyDataSetChanged")
         internal fun setBooks(booksList: List<BookItem>) {
             books = booksList
             notifyDataSetChanged()
@@ -100,6 +107,7 @@ class ListFragment : Fragment() {
             holder.view.findViewById<TextView>(R.id.author).text = books[position].author
             holder.view.findViewById<TextView>(R.id.publish_date).text = books[position].publicationDate
             holder.view.findViewById<RatingBar>(R.id.rating).rating = books[position].rating
+            holder.view.findViewById<ImageView>(R.id.cover_image).setImageDrawable(books[position].imageDrawable)
 //            context?.let {
 //                Glide.with(it)
 //                    .load(resources.getString(R.string.picture_base_url) + movies[position].poster_path)
@@ -114,14 +122,7 @@ class ListFragment : Fragment() {
             }
         }
 
-        inner class BookViewHolder(val view: View) : RecyclerView.ViewHolder(view),
-            View.OnClickListener {
-            override fun onClick(view: View?) {
-                if (view != null) {
-                    //Do some stuff here after the tap
-                }
-            }
-        }
+        inner class BookViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
 
     }

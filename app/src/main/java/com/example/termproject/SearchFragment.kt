@@ -1,15 +1,17 @@
 package com.example.termproject
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termproject.DTOs.BookItem
 import com.example.termproject.DTOs.TagItem
@@ -20,6 +22,8 @@ class SearchFragment : Fragment() {
 
     private lateinit var binding:FragmentSearchBinding
 
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Suppress("DEPRECATION")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,18 +49,23 @@ class SearchFragment : Fragment() {
 
 
 
-        val book1 = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat())
-        val book2 = BookItem("The Catcher in the Rye", "J.D. Salinger", "1951", 4.0.toFloat())
-        val book3 = BookItem("Brave New World", "Aldous Huxley", "1932", 3.0.toFloat())
-        val book4 = BookItem("1984", "George Orwell", "1949", 5.0.toFloat())
-        val book5 = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat())
-        val book6 = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat())
+        val book1 = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.great_gatsby))
+        val book2 = BookItem("The Catcher in the Rye", "J.D. Salinger", "1951", 4.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable.catcher_in_the_rye))
+        val book3 = BookItem("Brave New World", "Aldous Huxley", "1932", 3.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable.brave_new_world))
+        val book4 = BookItem("1984", "George Orwell", "1949", 5.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable._1984))
+        val book5 = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.jane_erye))
+        val book6 = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.pride_and_prejudice))
 
 
         val bookItemList:List<BookItem> = listOf(book1, book2, book3, book4, book5, book6)
 
         resultAdapter.setResults(bookItemList)
 
+
+        val homeBtn = view.findViewById<ImageButton>(R.id.home)
+        homeBtn.setOnClickListener {
+            view.findNavController().navigate(R.id.action_searchFragment_to_listFragment)
+        }
 
 
 
@@ -68,6 +77,7 @@ class SearchFragment : Fragment() {
 
         private var results = listOf<BookItem>()
 
+        @SuppressLint("NotifyDataSetChanged")
         internal fun setResults(tagsList:List<BookItem>) {
             results  = tagsList
             notifyDataSetChanged()
@@ -86,6 +96,9 @@ class SearchFragment : Fragment() {
         override fun onBindViewHolder(holder: ResultViewHolder, position: Int) {
             holder.view.findViewById<TextView>(R.id.title).text = results[position].title
             holder.view.findViewById<TextView>(R.id.author).text = results[position].author
+            if(results[position].imageDrawable != null){
+                holder.view.findViewById<ImageView>(R.id.image).setImageDrawable(results[position].imageDrawable)
+            }
         }
 
         inner class ResultViewHolder(val view: View) : RecyclerView.ViewHolder(view),
@@ -101,6 +114,7 @@ class SearchFragment : Fragment() {
 
         private var filters = listOf<TagItem>()
 
+        @SuppressLint("NotifyDataSetChanged")
         internal fun setFilters(filtersList:List<TagItem>) {
             filters  = filtersList
             notifyDataSetChanged()
