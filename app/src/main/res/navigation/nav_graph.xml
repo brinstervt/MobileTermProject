@@ -18,5 +18,9 @@
         android:id="@+id/bookFragment"
         android:name="com.example.termproject.BookFragment"
         android:label="fragment_book"
-        tools:layout="@layout/fragment_book" />
+        tools:layout="@layout/fragment_book" >
+        <action
+            android:id="@+id/action_bookFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
 </navigation>
