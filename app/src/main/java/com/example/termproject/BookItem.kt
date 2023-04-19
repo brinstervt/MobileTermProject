@@ -6,4 +6,5 @@ data class BookItem (
     val publicationDate:String,
     val rating:Float,
     val imageUrl:String = "",
+    val imageInt:Int = 0,
     )
