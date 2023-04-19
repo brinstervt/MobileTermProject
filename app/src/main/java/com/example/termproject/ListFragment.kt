@@ -9,6 +9,7 @@ import android.widget.*
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.termproject.DTOs.BookItem
 import com.example.termproject.databinding.FragmentListBinding
 import com.google.android.material.textfield.TextInputLayout
 
@@ -32,12 +33,12 @@ class ListFragment : Fragment() {
         bookList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
 
-        val book1:BookItem = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat())
-        val book2:BookItem = BookItem("The Catcher in the Rye", "J.D. Salinger", "1951", 4.0.toFloat())
-        val book3:BookItem = BookItem("Brave New World", "Aldous Huxley", "1932", 3.0.toFloat())
-        val book4:BookItem = BookItem("1984", "George Orwell", "1949", 5.0.toFloat())
-        val book5:BookItem = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat())
-        val book6:BookItem = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat())
+        val book1: BookItem = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat())
+        val book2: BookItem = BookItem("The Catcher in the Rye", "J.D. Salinger", "1951", 4.0.toFloat())
+        val book3: BookItem = BookItem("Brave New World", "Aldous Huxley", "1932", 3.0.toFloat())
+        val book4: BookItem = BookItem("1984", "George Orwell", "1949", 5.0.toFloat())
+        val book5: BookItem = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat())
+        val book6: BookItem = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat())
 
 
         val bookItemList:List<BookItem> = listOf<BookItem>(book1, book2, book3, book4, book5, book6)

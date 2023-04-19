@@ -1,4 +1,4 @@
-package com.example.termproject
+package com.example.termproject.DTOs
 
 data class BookItem (
     val title:String,
