@@ -55,6 +55,10 @@ class ListFragment : Fragment() {
 
         adapter.setBooks(bookItemList)
 
+        val settingsButton=view.findViewById<ImageButton>(R.id.settings_button)
+        settingsButton.setOnClickListener {
+            view.findNavController().navigate(R.id.action_listFragment_to_settingsFragment)
+        }
 
 
 
