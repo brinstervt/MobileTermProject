@@ -2,6 +2,7 @@ package com.example.termproject
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +12,18 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termproject.DTOs.BookItem
+import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentListBinding
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.JsonObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ListFragment : Fragment() {
 
     private lateinit var binding : FragmentListBinding
+    private val access = DataAccess()
 
     @Suppress("DEPRECATION")
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -39,7 +46,16 @@ class ListFragment : Fragment() {
         bookList.adapter = adapter
         bookList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
-
+        val call = access.getBooks("Great Gatsby")
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                val data = response.body()
+                Log.d("api", data.toString())
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.d("api", "failure   $t")
+            }
+        })
 
 
         val book1 = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.great_gatsby))
@@ -48,6 +64,8 @@ class ListFragment : Fragment() {
         val book4 = BookItem("1984", "George Orwell", "1949", 5.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable._1984))
         val book5 = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.jane_erye))
         val book6 = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.pride_and_prejudice))
+
+
 
 
 

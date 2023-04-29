@@ -11,6 +11,8 @@
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
 
+    <string name="api_key">AIzaSyDnAL3qsC3X0ZjKAP8NKRMHir7LMrNjiuo</string>
+
     <string-array name="dropdown">
         <item>All Books</item>
         <item>Currently Reading</item>

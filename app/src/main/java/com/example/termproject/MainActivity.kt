@@ -21,11 +21,11 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var searchView: SearchView
-    private lateinit var exposedDropdownMenu: TextInputLayout
-    private lateinit var bookList: RecyclerView
+//    private lateinit var searchView: SearchView
+//    private lateinit var exposedDropdownMenu: TextInputLayout
+//    private lateinit var bookList: RecyclerView
     private lateinit var binding: ActivityMainBinding
-    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+//    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
