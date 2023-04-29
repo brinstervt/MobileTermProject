@@ -50,6 +50,7 @@ class ListFragment : Fragment() {
         call.enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 val data = response.body()
+
                 Log.d("api", data.toString())
             }
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {

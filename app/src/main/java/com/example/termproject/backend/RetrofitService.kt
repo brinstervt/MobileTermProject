@@ -6,6 +6,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -14,8 +15,10 @@ interface RetrofitService {
 
         @GET("volumes")
         fun getBooks(
-            @Query("q") query: String,
-            @Query("key") apiKey: String = "AIzaSyDnAL3qsC3X0ZjKAP8NKRMHir7LMrNjiuo",
+            @Query("q") query:String,
+            @Query("projection") projection:String = "full",
+            @Query("printType") printType:String = "books",
+            @Query("key") apiKey:String = "AIzaSyDnAL3qsC3X0ZjKAP8NKRMHir7LMrNjiuo",
         ): Call<JsonObject>
 
 
