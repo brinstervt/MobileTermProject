@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.termproject.DTOs.BookItem
 import com.example.termproject.DTOs.ReviewItem
 import com.example.termproject.DTOs.TagItem
 import com.example.termproject.databinding.FragmentBookBinding
@@ -21,6 +22,8 @@ class BookFragment : Fragment() {
 
 
     private lateinit var binding: FragmentBookBinding
+    private var book: BookItem? = null
+
 
     @Suppress("DEPRECATION")
     override fun onCreateView(
@@ -30,6 +33,8 @@ class BookFragment : Fragment() {
 
         binding = FragmentBookBinding.inflate(layoutInflater)
         val view = binding.root
+
+        book = this.arguments?.getParcelable("book")
 
 
         val tagRecycler = view.findViewById(R.id.tag_list) as RecyclerView
