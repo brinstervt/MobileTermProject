@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SearchView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
@@ -44,38 +45,16 @@ class SearchFragment : Fragment() {
         //initializing views
         val searchBar = view.findViewById<SearchView>(R.id.searchbar)
         val homeBtn = view.findViewById<ImageButton>(R.id.home)
+        val searchType = view.findViewById<Spinner>(R.id.search_type)
         //initializing recyclers
-//        val filterList = view.findViewById<RecyclerView>(R.id.filter_list)
-//        val filterAdapter = FilterAdapter()
-//        filterList.adapter = filterAdapter
-
         val resultList = view.findViewById<RecyclerView>(R.id.result_list)
         val resultAdapter = ResultsAdapter()
         resultList.adapter = resultAdapter
         resultList.layoutManager = GridLayoutManager(context, 2)
 
-
-//        val tag1 = TagItem("fiction", resources.getColor(R.color.purple_200))
-//        val tag2 = TagItem("classic", resources.getColor(R.color.red))
-//        val tag3 = TagItem("popular", resources.getColor(R.color.teal_700))
-//        val tagList = listOf(tag1, tag2, tag3)
-//        filterAdapter.setFilters(tagList)
-
-
-
-
-
-//        val book1 = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.great_gatsby))
-//        val book2 = BookItem("The Catcher in the Rye", "J.D. Salinger", "1951", 4.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable.catcher_in_the_rye))
-//        val book3 = BookItem("Brave New World", "Aldous Huxley", "1932", 3.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable.brave_new_world))
-//        val book4 = BookItem("1984", "George Orwell", "1949", 5.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable._1984))
-//        val book5 = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.jane_erye))
-//        val book6 = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.pride_and_prejudice))
-//
-//
-//        val bookItemList:List<BookItem> = listOf(book1, book2, book3, book4, book5, book6)
-//
-//        resultAdapter.setResults(bookItemList)
+//        val filterList = view.findViewById<RecyclerView>(R.id.filter_list)
+//        val filterAdapter = FilterAdapter()
+//        filterList.adapter = filterAdapter
 
         homeBtn.setOnClickListener {
             view.findNavController().navigate(R.id.action_searchFragment_to_listFragment)
@@ -84,8 +63,10 @@ class SearchFragment : Fragment() {
 
         searchBar.setOnQueryTextListener(object:SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                Log.d("search", p0.toString())
-                val call = access.getBooks(p0.toString())
+                val selectedSearchType = searchType.selectedItem.toString()
+                val query = searchType(selectedSearchType) + ":$p0"
+                Log.d("query", query)
+                val call = access.getBooks(query)
                 call.enqueue(object: Callback<JsonObject>{
                     override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                         val data = response.body()
@@ -110,6 +91,15 @@ class SearchFragment : Fragment() {
 
         return view
     }
+
+    private fun searchType(value:String):String{
+        when(value) {
+            "Title" -> return "+intitle"
+            "Author" -> return "+inauthor"
+            else -> return ""
+        }
+    }
+
 
     inner class ResultsAdapter :
         RecyclerView.Adapter<ResultsAdapter.ResultViewHolder>(){
