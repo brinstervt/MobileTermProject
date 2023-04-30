@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.termproject.DTOs.BookItem
 import com.example.termproject.DTOs.ReviewItem
 import com.example.termproject.DTOs.TagItem
+import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentBookBinding
 
 class BookFragment : Fragment() {
@@ -23,6 +24,7 @@ class BookFragment : Fragment() {
 
     private lateinit var binding: FragmentBookBinding
     private var book: BookItem? = null
+    private val access = DataAccess()
 
 
     @Suppress("DEPRECATION")
