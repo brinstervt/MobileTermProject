@@ -7,11 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.SearchView
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -131,6 +127,8 @@ class SearchFragment : Fragment() {
         override fun onBindViewHolder(holder: ResultViewHolder, position: Int) {
             holder.view.findViewById<TextView>(R.id.title).text = results[position].title
             holder.view.findViewById<TextView>(R.id.author).text = results[position].author
+            holder.view.findViewById<RatingBar>(R.id.ratingBar).rating = results[position].rating
+            holder.view.findViewById<TextView>(R.id.rating_number).text = "(${results[position].ratingCount})"
             context?.let {
                 Glide.with(it)
                     .load(results[position].thumbnail)
