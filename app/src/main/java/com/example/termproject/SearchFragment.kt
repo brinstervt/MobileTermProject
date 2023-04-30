@@ -45,9 +45,9 @@ class SearchFragment : Fragment() {
         val searchBar = view.findViewById<SearchView>(R.id.searchbar)
         val homeBtn = view.findViewById<ImageButton>(R.id.home)
         //initializing recyclers
-        val filterList = view.findViewById<RecyclerView>(R.id.filter_list)
-        val filterAdapter = FilterAdapter()
-        filterList.adapter = filterAdapter
+//        val filterList = view.findViewById<RecyclerView>(R.id.filter_list)
+//        val filterAdapter = FilterAdapter()
+//        filterList.adapter = filterAdapter
 
         val resultList = view.findViewById<RecyclerView>(R.id.result_list)
         val resultAdapter = ResultsAdapter()
@@ -55,11 +55,11 @@ class SearchFragment : Fragment() {
         resultList.layoutManager = GridLayoutManager(context, 2)
 
 
-        val tag1 = TagItem("fiction", resources.getColor(R.color.purple_200))
-        val tag2 = TagItem("classic", resources.getColor(R.color.red))
-        val tag3 = TagItem("popular", resources.getColor(R.color.teal_700))
-        val tagList = listOf(tag1, tag2, tag3)
-        filterAdapter.setFilters(tagList)
+//        val tag1 = TagItem("fiction", resources.getColor(R.color.purple_200))
+//        val tag2 = TagItem("classic", resources.getColor(R.color.red))
+//        val tag3 = TagItem("popular", resources.getColor(R.color.teal_700))
+//        val tagList = listOf(tag1, tag2, tag3)
+//        filterAdapter.setFilters(tagList)
 
 
 

@@ -48,16 +48,26 @@ class DataAccess {
         if (ratingCountData != null){
             ratingCount = ratingCountData.asInt
         }
+        var pageCount = 0
+        val pageCountData = volumeInfo.get("pageCount")
+        if (pageCountData != null){
+            pageCount = pageCountData.asInt
+        }
+        var thumbnail = ""
+        val thumbNailData = imageLinks.get("thumbnail")
+        if (thumbNailData != null){
+            thumbnail = thumbNailData.asString
+        }
         return BookItem(
             description = volumeInfo.get("description").asString,
             title = volumeInfo.get("title").asString,
             author = volumeInfo.getAsJsonArray("authors").get(0).asString,
             publicationDate = volumeInfo.get("publishedDate").asString,
-            pageCount = volumeInfo.get("pageCount").asInt,
+            pageCount = pageCount,
             category = category,
             ratingCount = ratingCount,
             rating = rating,
-            thumbnail = imageLinks.get("thumbnail").asString,
+            thumbnail = thumbnail,
         )
     }
 

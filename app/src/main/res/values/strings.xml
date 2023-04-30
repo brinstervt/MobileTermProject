@@ -38,4 +38,16 @@
         <item>classic</item>
         <item>popular</item>
     </string-array>
+    <string-array name="search_types">
+        <item>Title</item>
+        <item>Author</item>
+    </string-array>
+    <string-array name="subjects">
+        <item>Filter By Subject</item>
+        <item>fiction</item>
+        <item>nonfiction</item>
+        <item>biography</item>
+        <item>fantasy</item>
+        <item>sci-fi</item>
+    </string-array>
 </resources>
