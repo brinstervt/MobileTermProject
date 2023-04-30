@@ -15,6 +15,8 @@ import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.termproject.DTOs.BookItem
 import com.example.termproject.DTOs.TagItem
 import com.example.termproject.backend.DataAccess
@@ -133,9 +135,12 @@ class SearchFragment : Fragment() {
         override fun onBindViewHolder(holder: ResultViewHolder, position: Int) {
             holder.view.findViewById<TextView>(R.id.title).text = results[position].title
             holder.view.findViewById<TextView>(R.id.author).text = results[position].author
-//            if(results[position].imageDrawable != null){
-//                holder.view.findViewById<ImageView>(R.id.image).setImageDrawable(results[position].imageDrawable)
-//            }
+            context?.let {
+                Glide.with(it)
+                    .load(results[position].thumbnail)
+                    .apply(RequestOptions().override(80, 120))
+                    .into(holder.view.findViewById(R.id.image))
+            }
         }
 
         inner class ResultViewHolder(val view: View) : RecyclerView.ViewHolder(view),
@@ -170,6 +175,7 @@ class SearchFragment : Fragment() {
         override fun onBindViewHolder(holder: FilterViewHolder, position: Int) {
             holder.view.findViewById<TextView>(R.id.tag).text = filters[position].tag
             (holder.view as CardView).setCardBackgroundColor(filters[position].color)
+
         }
 
         inner class FilterViewHolder(val view: View) : RecyclerView.ViewHolder(view)

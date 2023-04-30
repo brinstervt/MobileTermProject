@@ -8,9 +8,9 @@ data class BookItem (
     val publicationDate:String,
     val description:String,
     val pageCount:Int,
-//    val category:String,
+    val category:String,
     val rating:Float,
-//    val ratingCount:Int,
+    val ratingCount:Int,
     val thumbnail:String,
 //    val images:BookImages,
     )

@@ -33,8 +33,20 @@ class DataAccess {
         Log.d("bookdata", data.toString())
         val volumeInfo = data.getAsJsonObject("volumeInfo")
         val imageLinks = volumeInfo.getAsJsonObject("imageLinks")
-        if (volumeInfo.get("averageRating") == null){
-            Log.d("null testing", "test")
+        var rating = 0F
+        val ratingData = volumeInfo.get("averageRating")
+        if (ratingData != null){
+            rating = ratingData.asFloat
+        }
+        var category = ""
+        val categoryData = volumeInfo.get("mainCategory")
+        if (categoryData != null){
+            category = categoryData.asString
+        }
+        var ratingCount = 0
+        val ratingCountData = volumeInfo.get("ratingsCount")
+        if (ratingCountData != null){
+            ratingCount = ratingCountData.asInt
         }
         return BookItem(
             description = volumeInfo.get("description").asString,
@@ -42,11 +54,10 @@ class DataAccess {
             author = volumeInfo.getAsJsonArray("authors").get(0).asString,
             publicationDate = volumeInfo.get("publishedDate").asString,
             pageCount = volumeInfo.get("pageCount").asInt,
-//            category = volumeInfo.get("mainCategory").asString,
-//            ratingCount = volumeInfo.get("ratingsCount").asInt,
-//            images = processBookImages(imageLinks)
-            rating = 0F,
-            thumbnail = imageLinks.get("thumbnail").asString
+            category = category,
+            ratingCount = ratingCount,
+            rating = rating,
+            thumbnail = imageLinks.get("thumbnail").asString,
         )
     }
 
