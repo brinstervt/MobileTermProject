@@ -2,7 +2,10 @@ package com.example.termproject
 
 
 import android.annotation.SuppressLint
+import android.media.Rating
 import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +16,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.termproject.DTOs.BookItem
 import com.example.termproject.DTOs.ReviewItem
 import com.example.termproject.DTOs.TagItem
@@ -37,6 +42,7 @@ class BookFragment : Fragment() {
         val view = binding.root
 
         book = this.arguments?.getParcelable("book")
+        Log.d("ThumbnailURL", "URL: ${book?.thumbnail}")
 
 
         val tagRecycler = view.findViewById(R.id.tag_list) as RecyclerView
@@ -49,9 +55,28 @@ class BookFragment : Fragment() {
         reviewRecycler.adapter = reviewAdapter
         reviewRecycler.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
+        binding.title.text = book?.title
+        // Get the screen's display metrics
+        val displayMetrics = resources.displayMetrics
 
+        // Calculate the scaled font size in dp based on the screen density
+        val scaledFontSize = displayMetrics.density * 8// Change to the desired font size
 
-        binding.description.text = "The new novel by George Orwell is the major work towards which all his previous writing has pointed.Critics have hailed it as his most solid, most brilliant work.Though the story of Nineteen Eighty-Four takes place thirty-five years hence, it is in every sense timely.The scene is London, where there has been no new housing since 1950 and where the city-wide slums are called Victory Mansions.Science has abandoned Man for the State. As every citizen knows only too well, war is peace."
+        // Set the scaled font size for the title TextView
+        binding.title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, scaledFontSize)
+
+        binding.author.text = book?.author
+        //set rating
+        binding.bookRating.rating = book?.rating ?: 0f
+        //set description
+        binding.description.text = book?.description
+        context?.let {
+            Glide.with(it)
+                .load(book?.thumbnail)
+                .apply(RequestOptions().override(128, 128))
+                .into(binding.coverImage) // Make sure you have an ImageView with the ID 'poster' in your layout
+        }
+
 
         val tag1 = TagItem("fiction", resources.getColor(R.color.purple_200))
         val tag2 = TagItem("classic", resources.getColor(R.color.red))

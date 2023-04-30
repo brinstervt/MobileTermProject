@@ -59,7 +59,7 @@ class DataAccess {
             thumbnail = thumbNailData.asString
         }
         var description = ""
-        val descriptionData = imageLinks.get("description")
+        val descriptionData = volumeInfo.get("description")
         if (descriptionData != null){
             description = descriptionData.asString
         }
