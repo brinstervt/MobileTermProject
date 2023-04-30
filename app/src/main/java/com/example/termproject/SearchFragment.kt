@@ -46,6 +46,7 @@ class SearchFragment : Fragment() {
         val searchBar = view.findViewById<SearchView>(R.id.searchbar)
         val homeBtn = view.findViewById<ImageButton>(R.id.home)
         val searchType = view.findViewById<Spinner>(R.id.search_type)
+        val subjectSpin = view.findViewById<Spinner>(R.id.subject)
         //initializing recyclers
         val resultList = view.findViewById<RecyclerView>(R.id.result_list)
         val resultAdapter = ResultsAdapter()
@@ -64,14 +65,18 @@ class SearchFragment : Fragment() {
         searchBar.setOnQueryTextListener(object:SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 val selectedSearchType = searchType.selectedItem.toString()
-                val query = searchType(selectedSearchType) + ":$p0"
-                Log.d("query", query)
+                val selectedSubject = subjectSpin.selectedItem.toString()
+                var query = searchType(selectedSearchType) + ":$p0"
+                if(selectedSubject != "Filter by Subject"){
+                    query = "$query+subject:$selectedSubject"
+                }
                 val call = access.getBooks(query)
                 call.enqueue(object: Callback<JsonObject>{
                     override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                         val data = response.body()
+                        Log.d("full data", data.toString())
                         val booksList = data?.let { access.processBookListData(it) }
-                        Log.d("response", booksList.toString())
+//                        Log.d("response", booksList.toString())
                         if (booksList != null) {
                             resultAdapter.setResults(booksList)
                         }
@@ -107,8 +112,9 @@ class SearchFragment : Fragment() {
         private var results = listOf<BookItem>()
 
         @SuppressLint("NotifyDataSetChanged")
-        internal fun setResults(tagsList:List<BookItem>) {
-            results  = tagsList
+        internal fun setResults(list:List<BookItem>) {
+            results  = list
+//            Log.d("results", results.size.toString())
             notifyDataSetChanged()
         }
 

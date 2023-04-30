@@ -20,7 +20,7 @@ class DataAccess {
     fun processBookListData(data:JsonObject):List<BookItem>{
         val dataList = data.getAsJsonArray("items")
         val resultList = mutableListOf<BookItem>()
-        for (i in 0 until data.size()) {
+        for (i in 0 until dataList.size()) {
             val bookData = dataList.get(i)?.asJsonObject
             if(bookData != null) {
                 resultList.add(processBookData(bookData))
@@ -30,7 +30,7 @@ class DataAccess {
     }
 
     fun processBookData(data:JsonObject):BookItem{
-        Log.d("bookdata", data.toString())
+//        Log.d("bookdata", data.toString())
         val volumeInfo = data.getAsJsonObject("volumeInfo")
         val imageLinks = volumeInfo.getAsJsonObject("imageLinks")
         var rating = 0F
@@ -58,8 +58,14 @@ class DataAccess {
         if (thumbNailData != null){
             thumbnail = thumbNailData.asString
         }
+        var description = ""
+        val descriptionData = imageLinks.get("description")
+        if (descriptionData != null){
+            description = descriptionData.asString
+        }
+        Log.d("categories", category)
         return BookItem(
-            description = volumeInfo.get("description").asString,
+            description = description,
             title = volumeInfo.get("title").asString,
             author = volumeInfo.getAsJsonArray("authors").get(0).asString,
             publicationDate = volumeInfo.get("publishedDate").asString,

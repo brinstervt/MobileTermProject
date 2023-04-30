@@ -43,7 +43,7 @@
         <item>Author</item>
     </string-array>
     <string-array name="subjects">
-        <item>Filter By Subject</item>
+        <item>Filter by Subject</item>
         <item>fiction</item>
         <item>nonfiction</item>
         <item>biography</item>
