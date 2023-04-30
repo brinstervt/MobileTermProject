@@ -18,6 +18,8 @@ interface RetrofitService {
             @Query("q") query:String,
             @Query("projection") projection:String = "full",
             @Query("printType") printType:String = "books",
+            @Query("filter") filter:String = "partial",
+//            @Query("langRestrict") language:String="en",
             @Query("maxResults") maxResults:Int = 10,
             @Query("key") apiKey:String = "AIzaSyDnAL3qsC3X0ZjKAP8NKRMHir7LMrNjiuo",
         ): Call<JsonObject>

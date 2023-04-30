@@ -45,9 +45,11 @@
     <string-array name="subjects">
         <item>Filter by Subject</item>
         <item>fiction</item>
-        <item>nonfiction</item>
+        <item>young adult</item>
         <item>biography</item>
-        <item>fantasy</item>
-        <item>sci-fi</item>
+        <item>business</item>
+        <item>education</item>
+        <item>health</item>
+        <item>science</item>
     </string-array>
 </resources>
