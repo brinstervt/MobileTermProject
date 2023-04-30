@@ -1,7 +1,10 @@
 package com.example.termproject.DTOs
 
 import android.graphics.drawable.Drawable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class BookItem (
     val title:String,
     val author:String,
@@ -13,8 +16,9 @@ data class BookItem (
     val ratingCount:Int,
     val thumbnail:String,
 //    val images:BookImages,
-    )
+    ):Parcelable
 
+@Parcelize
 data class BookImages(
     val smallThumbnail:String,
     val thumbnail:String,
@@ -22,4 +26,4 @@ data class BookImages(
     val medium:String,
     val large:String,
     val extraLarge:String,
-)
+):Parcelable

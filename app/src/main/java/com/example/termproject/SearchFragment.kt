@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -134,6 +135,12 @@ class SearchFragment : Fragment() {
                     .load(results[position].thumbnail)
                     .apply(RequestOptions().override(80, 120))
                     .into(holder.view.findViewById(R.id.image))
+            }
+            holder.itemView.setOnClickListener {
+                holder.view.findNavController().navigate(
+                    R.id.action_searchFragment_to_bookFragment,
+                    bundleOf("book" to results[position])
+                )
             }
         }
 
