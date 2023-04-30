@@ -4,7 +4,6 @@ package com.example.termproject
 import android.annotation.SuppressLint
 import android.media.Rating
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -42,7 +41,6 @@ class BookFragment : Fragment() {
         val view = binding.root
 
         book = this.arguments?.getParcelable("book")
-        Log.d("ThumbnailURL", "URL: ${book?.thumbnail}")
 
 
         val tagRecycler = view.findViewById(R.id.tag_list) as RecyclerView
@@ -56,20 +54,10 @@ class BookFragment : Fragment() {
         reviewRecycler.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
         binding.title.text = book?.title
-        // Get the screen's display metrics
-        val displayMetrics = resources.displayMetrics
-
-        // Calculate the scaled font size in dp based on the screen density
-        val scaledFontSize = displayMetrics.density * 8// Change to the desired font size
-
-        // Set the scaled font size for the title TextView
-        binding.title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, scaledFontSize)
-
         binding.author.text = book?.author
-        //set rating
         binding.bookRating.rating = book?.rating ?: 0f
-        //set description
         binding.description.text = book?.description
+
         context?.let {
             Glide.with(it)
                 .load(book?.thumbnail)
