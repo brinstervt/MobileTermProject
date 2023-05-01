@@ -72,12 +72,11 @@ class BookFragment : Fragment() {
         }
 
         var currentShelf:String? = null
+        //gets the current shelf of the selected book and applies to the spinner
         GlobalScope.launch{
             val shelf = access.getShelf(book?.bookID.toString(), userID.toString())
-            Log.d("shelf result", shelf)
             val adapter = binding.shelf.adapter
             for (i in 0 until adapter.count){
-                Log.d("shelves in adapter", adapter.getItem(i).toString())
                 if(adapter.getItem(i).toString() == shelf){
                     activity?.runOnUiThread {
                         binding.shelf.setSelection(i)
@@ -87,24 +86,17 @@ class BookFragment : Fragment() {
                 }
             }
         }
-
+        //if the spinner is changed adjust the books shelf in the database accordingly
         binding.shelf.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                Log.d("change", p2.toString())
                 var newShelf:String? = null
                 if(p2 != 0)  newShelf = binding.shelf.adapter.getItem(p2).toString()
-                Log.d("new shelf", newShelf.toString())
-                Log.d("current shelf", currentShelf.toString())
                 if (newShelf != currentShelf){
-                    Log.d("entered", currentShelf.toString())
                     access.changeShelf(book?.bookID!!, userID.toString(), newShelf, currentShelf)
                     currentShelf = newShelf
                 }
             }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-
-            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
 
         val tag1 = TagItem("fiction", resources.getColor(R.color.purple_200))

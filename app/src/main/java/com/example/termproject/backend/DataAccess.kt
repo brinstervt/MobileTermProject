@@ -5,6 +5,7 @@ import com.example.termproject.DTOs.BookImages
 import com.example.termproject.DTOs.BookItem
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -99,30 +100,27 @@ class DataAccess {
         )
     }
 
-    fun changeShelf(bookID:String, uid:String, newShelf:String?, oldShelf:String?){
-        Log.d("change shelf", "$newShelf,  $oldShelf")
+    // takes two shelves and adjusts the database for the given book and user
+    fun changeShelf(bookID:String, userID:String, newShelf:String?, oldShelf:String?){
+//        Log.d("change shelf", "$newShelf,  $oldShelf")
         GlobalScope.launch{
-            val dbRef = database.child("userInfo/$uid/shelves")
-            if(newShelf != null) dbRef.child("$newShelf/$bookID").setValue(1)
-            if(oldShelf != null) dbRef.child("$oldShelf/$bookID").removeValue()
+            val shelfRef = database.child("userInfo/$userID/shelves")
+            if(newShelf != null) shelfRef.child("$newShelf/$bookID").setValue(1)
+            if(oldShelf != null) shelfRef.child("$oldShelf/$bookID").removeValue()
+            database.child("userInfo/$userID/books/$bookID/shelf").setValue(newShelf)
         }
     }
 
-    suspend fun getShelf(bookID:String, uid:String):String {
+    //finds the shelf associated with a book
+    suspend fun getShelf(bookID: String, userID: String):String {
         return suspendCoroutine { continuation ->
-            val dbRef = database.child("userInfo/$uid/shelves")
-            dbRef.get().addOnSuccessListener {
-                Log.d("shelves", it.toString())
-                it.children.forEach { shelf ->
-                    Log.d("shelf", shelf.toString())
-                    shelf.children.forEach { book ->
-                        if (book.key == bookID) {
-                            continuation.resume(shelf.key.toString())
-                        }
-                    }
+            database.child("userInfo/$userID/books").get().addOnSuccessListener {
+                it.children.forEach {book ->
+                    if(book.key == bookID) continuation.resume(book.child("shelf").value.toString())
                 }
             }
         }
     }
+    
 
 }
