@@ -26,6 +26,8 @@ import com.example.termproject.DTOs.TagItem
 import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentBookBinding
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,6 +38,7 @@ class BookFragment : Fragment() {
     private lateinit var binding: FragmentBookBinding
     private var book: BookItem? = null
     private val userID = Firebase.auth.currentUser?.uid
+    private lateinit var database: DatabaseReference
     private val access = DataAccess()
 
 
@@ -49,12 +52,14 @@ class BookFragment : Fragment() {
         val view = binding.root
 
         book = this.arguments?.getParcelable("book")
+        database = Firebase.database.reference
 
 
         val tagRecycler = view.findViewById(R.id.tag_list) as RecyclerView
         val tagAdapter = BookTagsAdapter()
         tagRecycler.adapter = tagAdapter
         tagRecycler.layoutManager = StaggeredGridLayoutManager(4, RecyclerView.VERTICAL)
+        tagAdapter.setTags(book?.bookID.toString())
 
         val reviewRecycler = view.findViewById(R.id.review_list) as RecyclerView
         val reviewAdapter = ReviewListAdapter()
@@ -137,7 +142,6 @@ class BookFragment : Fragment() {
 //                    .into(holder.view.findViewById(R.id.poster))
 //            }
 
-
         return view
     }
 
@@ -149,9 +153,14 @@ class BookFragment : Fragment() {
         private var tags = mutableListOf<TagItem>()
 
         @SuppressLint("NotifyDataSetChanged")
-        internal fun setTags(tagsList:List<TagItem>) {
-            tags  = tagsList as MutableList<TagItem>
-            notifyDataSetChanged()
+        internal fun setTags(bookID:String) {
+            tags.clear()
+            val dbRef = database.child("userInfo/$userID/books/$bookID/tags").get().addOnSuccessListener {
+                it.children.forEach {tag ->
+                    tags.add(TagItem(tag.key.toString(), tag.value.toString().toInt()))
+                    notifyDataSetChanged()
+                }
+            }
         }
 
         internal fun addTag(tagText:String ,bookID:String){
