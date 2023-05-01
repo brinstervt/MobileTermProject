@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -81,8 +82,8 @@ class ListFragment : Fragment() {
         bookList.adapter = adapter
         bookList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
-        adapter.populateFromShelf("Read")
-
+//        adapter.populateFromShelf("Read")
+        adapter.populateAllBooks()
 
 
 
@@ -118,6 +119,35 @@ class ListFragment : Fragment() {
         internal fun setBooks(booksList: List<BookItem>) {
             books = booksList as MutableList<BookItem>
             notifyDataSetChanged()
+        }
+
+        internal fun populateAllBooks(){
+            database.child("userInfo/$userID/books").get().addOnSuccessListener{
+                var max = 20
+                it.children.forEach { bookData ->
+                    if(max > 0) {
+                        val bookCall = access.getBookById(bookData.key.toString())
+                        bookCall.enqueue(object : Callback<JsonObject> {
+                            override fun onResponse(
+                                call: Call<JsonObject>,
+                                response: Response<JsonObject>
+                            ) {
+                                val data = response.body()
+                                val result = data?.let { access.processBookData(it) }
+                                if (result != null) {
+                                    books.add(result)
+                                    notifyDataSetChanged()
+                                }
+                            }
+                            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                                Log.d("api", "failure   $t")
+                            }
+                        })
+                        max--
+                    }
+                }
+            }
+
         }
 
         internal fun populateFromShelf(shelf:String){
@@ -168,11 +198,13 @@ class ListFragment : Fragment() {
 
 
             holder.itemView.setOnClickListener {
-                holder.view.findNavController().navigate(R.id.action_listFragment_to_bookFragment)
+                holder.view.findNavController().navigate(R.id.action_listFragment_to_bookFragment,
+                    bundleOf("book" to books[position]))
             }
         }
 
         inner class BookViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+
 
 
     }

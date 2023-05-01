@@ -63,6 +63,7 @@ class BookFragment : Fragment() {
         binding.author.text = book?.author
         binding.bookRating.rating = book?.rating ?: 0f
         binding.description.text = book?.description
+        binding.bookRating.rating = book?.rating!!
 
         context?.let {
             Glide.with(it)
