@@ -4,6 +4,7 @@ package com.example.termproject
 import android.annotation.SuppressLint
 import android.media.Rating
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,12 +23,17 @@ import com.example.termproject.DTOs.ReviewItem
 import com.example.termproject.DTOs.TagItem
 import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentBookBinding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class BookFragment : Fragment() {
 
 
     private lateinit var binding: FragmentBookBinding
     private var book: BookItem? = null
+    private val userID = Firebase.auth.currentUser?.uid
     private val access = DataAccess()
 
 
@@ -65,6 +71,40 @@ class BookFragment : Fragment() {
                 .into(binding.coverImage) // Make sure you have an ImageView with the ID 'poster' in your layout
         }
 
+        var currentShelf:String? = null
+        GlobalScope.launch{
+            val shelf = access.getShelf(book?.bookID.toString(), userID.toString())
+            Log.d("shelf result", shelf)
+            val adapter = binding.shelf.adapter
+            for (i in 0 until adapter.count){
+                Log.d("shelves in adapter", adapter.getItem(i).toString())
+                if(adapter.getItem(i).toString() == shelf){
+                    activity?.runOnUiThread {
+                        binding.shelf.setSelection(i)
+                    }
+                    currentShelf = shelf
+                    break
+                }
+            }
+        }
+
+        binding.shelf.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                Log.d("change", p2.toString())
+                val newShelf = binding.shelf.adapter.getItem(p2).toString()
+                Log.d("new shelf", newShelf)
+                Log.d("new shelf", currentShelf.toString())
+                if (p2 != 0 && newShelf != currentShelf){
+                    Log.d("entered", currentShelf.toString())
+                    access.changeShelf(book?.bookID!!, userID.toString(), newShelf, currentShelf)
+                    currentShelf = newShelf
+                }
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+        }
 
         val tag1 = TagItem("fiction", resources.getColor(R.color.purple_200))
         val tag2 = TagItem("classic", resources.getColor(R.color.red))

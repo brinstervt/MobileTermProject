@@ -78,6 +78,9 @@ class RegistrationActivity : AppCompatActivity() {
         val dbRef = FirebaseDatabase.getInstance().getReference("userInfo")
         dbRef.child("$uid/uid").setValue(uid)
         dbRef.child("$uid/name").setValue(name)
-        dbRef.child("$uid/email").setValue(email )
+        dbRef.child("$uid/email").setValue(email)
+        dbRef.child("$uid/shelves/Currently Reading").setValue(1)
+        dbRef.child("$uid/shelves/To Read").setValue(1)
+        dbRef.child("$uid/shelves/Read").setValue(1)
     }
 }

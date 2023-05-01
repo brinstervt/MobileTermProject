@@ -3,12 +3,20 @@ package com.example.termproject.backend
 import android.util.Log
 import com.example.termproject.DTOs.BookImages
 import com.example.termproject.DTOs.BookItem
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class DataAccess {
 
+    private val database = Firebase.database.reference
     fun getBooks(query:String): Call<JsonObject> {
         val baseUrl = "https://www.googleapis.com/books/v1/"
 
@@ -65,6 +73,7 @@ class DataAccess {
         }
         Log.d("categories", category)
         return BookItem(
+            bookID = data.get("id").asString,
             description = description,
             title = volumeInfo.get("title").asString,
             author = volumeInfo.getAsJsonArray("authors").get(0).asString,
@@ -80,6 +89,7 @@ class DataAccess {
     private fun processBookImages(data:JsonObject):BookImages{
         Log.d("imagedata", data.toString())
         return BookImages(
+
             data.get("smallThunmbnail").asString,
             data.get("thumbnail").asString,
             data.get("small").asString,
@@ -87,6 +97,32 @@ class DataAccess {
             data.get("large").asString,
             data.get("extraLarge").asString,
         )
+    }
+
+    fun changeShelf(bookID:String, uid:String, newShelf:String, oldShelf:String?){
+        Log.d("change shelf", "$newShelf,  $oldShelf")
+        GlobalScope.launch{
+            val dbRef = database.child("userInfo/$uid/shelves")
+            dbRef.child("$newShelf/$bookID").setValue(1)
+            if(oldShelf != null) dbRef.child("$oldShelf/$bookID").removeValue()
+        }
+    }
+
+    suspend fun getShelf(bookID:String, uid:String):String {
+        return suspendCoroutine { continuation ->
+            val dbRef = database.child("userInfo/$uid/shelves")
+            dbRef.get().addOnSuccessListener {
+                Log.d("shelves", it.toString())
+                it.children.forEach { shelf ->
+                    Log.d("shelf", shelf.toString())
+                    shelf.children.forEach { book ->
+                        if (book.key == bookID) {
+                            continuation.resume(shelf.key.toString())
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

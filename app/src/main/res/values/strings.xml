@@ -21,6 +21,7 @@
         <item>Completed</item>
     </string-array>
     <string-array name="shelves">
+        <item>No Shelf</item>
         <item>Read</item>
         <item>Currently Reading</item>
         <item>To Read</item>

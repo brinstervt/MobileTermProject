@@ -15,6 +15,11 @@ import com.example.termproject.DTOs.BookItem
 import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentListBinding
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,6 +28,8 @@ import retrofit2.Response
 class ListFragment : Fragment() {
 
     private lateinit var binding : FragmentListBinding
+    private lateinit var database: DatabaseReference
+    private val userID = Firebase.auth.currentUser?.uid
     private val access = DataAccess()
 
     @Suppress("DEPRECATION")
@@ -33,6 +40,8 @@ class ListFragment : Fragment() {
     ): View {
         binding = FragmentListBinding.inflate(layoutInflater)
         val view = binding.root
+
+        database = Firebase.database.reference
 
         val searchBtn = view.findViewById<ImageButton>(R.id.search)
         val shelfSelect = view.findViewById<TextInputLayout>(R.id.shelf_select)
@@ -51,28 +60,13 @@ class ListFragment : Fragment() {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 val data = response.body()
 
-                Log.d("api", data.toString())
+//                Log.d("api", data.toString())
             }
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                Log.d("api", "failure   $t")
+//                Log.d("api", "failure   $t")
             }
         })
 
-
-//        val book1 = BookItem("The Great Gatsby", "F. Scott Fitzgerald", "1925", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.great_gatsby))
-//        val book2 = BookItem("The Catcher in the Rye", "J.D. Salinger", "1951", 4.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable.catcher_in_the_rye))
-//        val book3 = BookItem("Brave New World", "Aldous Huxley", "1932", 3.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable.brave_new_world))
-//        val book4 = BookItem("1984", "George Orwell", "1949", 5.0.toFloat(), imageDrawable = resources.getDrawable(R.drawable._1984))
-//        val book5 = BookItem("Jane Eyre", "Charlotte Bronte", "1847", 3.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.jane_erye))
-//        val book6 = BookItem("Pride and Prejudice", "Jane Austen", "1813", 4.5.toFloat(), imageDrawable = resources.getDrawable(R.drawable.pride_and_prejudice))
-
-
-
-
-
-//        val bookItemList:List<BookItem> = listOf<BookItem>(book1, book2, book3, book4, book5, book6)
-//
-//        adapter.setBooks(bookItemList)
 
         val settingsButton=view.findViewById<ImageButton>(R.id.settings_button)
         settingsButton.setOnClickListener {

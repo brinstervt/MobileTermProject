@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class BookItem (
+    val bookID:String,
     val title:String,
     val author:String,
     val publicationDate:String,

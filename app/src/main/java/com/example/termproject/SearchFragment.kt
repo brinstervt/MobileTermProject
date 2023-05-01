@@ -19,6 +19,7 @@ import com.example.termproject.DTOs.BookItem
 import com.example.termproject.DTOs.TagItem
 import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentSearchBinding
+import com.google.firebase.database.DatabaseReference
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,6 +29,7 @@ import retrofit2.Response
 class SearchFragment : Fragment() {
 
     private lateinit var binding:FragmentSearchBinding
+    private lateinit var database: DatabaseReference
     private val access = DataAccess()
 
     @SuppressLint("UseCompatLoadingForDrawables")
