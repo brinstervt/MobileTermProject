@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.os.bundleOf
+import androidx.core.view.get
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,7 @@ import com.example.termproject.DTOs.BookItem
 import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentListBinding
 import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -85,6 +87,24 @@ class ListFragment : Fragment() {
 //        adapter.populateFromShelf("Read")
         adapter.populateAllBooks()
 
+        view.findViewById<AutoCompleteTextView>(R.id.autocomplete).setOnItemClickListener { adapterView, view, i, l ->
+            val shelf = (adapterView.get(i) as MaterialTextView).text.toString()
+            Log.d("clicker", shelf)
+            if(shelf == "All Books"){
+                adapter.populateAllBooks()
+            }else{
+                adapter.populateFromShelf(shelf)
+            }
+        }
+
+//        shelfSelect.setOnFocusChangeListener { view, b ->
+//            Log.d("focus change", "success")
+//
+//            if(!b){
+//                val text = shelfSelect.editText?.text
+//                Log.d("spinner text", text.toString())
+//            }
+//        }
 
 
 
@@ -102,8 +122,6 @@ class ListFragment : Fragment() {
         autoCompleteTextView?.setText(adapter.getItem(0), false)
 
         autoCompleteTextView?.setOnItemClickListener { _, _, position, _ ->
-//            val selectedItem = adapter.getItem(position)
-            // Handle the selected item here
         }
     }
 
@@ -122,6 +140,7 @@ class ListFragment : Fragment() {
         }
 
         internal fun populateAllBooks(){
+            books.clear()
             database.child("userInfo/$userID/books").get().addOnSuccessListener{
                 var max = 20
                 it.children.forEach { bookData ->
@@ -151,6 +170,7 @@ class ListFragment : Fragment() {
         }
 
         internal fun populateFromShelf(shelf:String){
+            books.clear()
             database.child("userInfo/$userID/shelves/$shelf").get().addOnSuccessListener {shelf->
                 shelf.children.forEach{bookData ->
                     val bookCall = access.getBookById(bookData.key.toString())
