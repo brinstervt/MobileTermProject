@@ -130,8 +130,30 @@ class DataAccess {
         }
     }
 
-    fun addTagData(tag:TagItem){
-        database.child("userInfo/tags/")
+    suspend fun tagExists(tagText:String, bookID: String, userID: String):Boolean{
+        return suspendCoroutine { continuation ->
+            database.child("userInfo/$userID/books/$bookID/tags").get().addOnSuccessListener {
+                continuation.resume(it.hasChild(tagText))
+            }
+        }
+    }
+
+    fun addTagData(tag:TagItem, bookID:String, userID:String){
+        Log.d("tag data", "entered")
+        val tagRef = database.child("userInfo/$userID/tags")
+        val bookRef = database.child("userInfo/$userID/books/$bookID/tags")
+        bookRef.get().addOnSuccessListener { bookTag ->
+            bookRef.child(tag.tag).setValue(tag.color)
+            tagRef.get().addOnSuccessListener {tagTag ->
+                if(tagTag.hasChild(tag.tag)){
+                    val currentCount = tagTag.value as Int
+                    tagRef.child(tag.tag).setValue(currentCount + 1)
+                }else{
+                    tagRef.setValue(1)
+                }
+            }
+        }
+
     }
 
     fun removeTagData(tag:TagItem){

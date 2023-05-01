@@ -7,6 +7,7 @@ import android.media.Rating
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -103,7 +104,7 @@ class BookFragment : Fragment() {
 
 
         binding.addTagButton.setOnClickListener{
-           tagAdapter.addTag(binding.addTagText.text.toString())
+           tagAdapter.addTag(binding.addTagText.text.toString(), book!!.bookID)
             binding.addTagText.text.clear()
         }
 
@@ -153,15 +154,31 @@ class BookFragment : Fragment() {
             notifyDataSetChanged()
         }
 
-        internal fun addTag(tagText:String){
-            if(tagText != "") {
-                val rand = (0..5).random()
-//                Log.d("color", colorval.toString())
-                val color = parseColor(resources.getStringArray(R.array.tag_colors)[rand])
-                val tag = TagItem(tagText, color)
-                tags.add(tag)
-                notifyDataSetChanged()
-                access.addTagData(tag)
+        internal fun addTag(tagText:String ,bookID:String){
+            GlobalScope.launch {
+                if(tagText.isBlank()){
+                    activity?.runOnUiThread {
+                        val toast = Toast.makeText(activity, "Tag Requires Text", Toast.LENGTH_LONG)
+                        toast.setGravity(Gravity.CENTER, 0, 0)
+                        toast.show()
+                    }
+                }
+                else if(access.tagExists(tagText, bookID, userID.toString())) {
+                    activity?.runOnUiThread {
+                        val toast = Toast.makeText(activity, "Tag Already Exists For This Book", Toast.LENGTH_LONG)
+                        toast.setGravity(Gravity.CENTER, 0, 0)
+                        toast.show()
+                    }
+                }else{
+                    val rand = (0..5).random()
+                    val color = parseColor(resources.getStringArray(R.array.tag_colors)[rand])
+                    val tag = TagItem(tagText, color)
+                    tags.add(tag)
+                    access.addTagData(tag, bookID, userID!!)
+                    activity?.runOnUiThread {
+                        notifyDataSetChanged()
+                    }
+                }
             }
         }
 
