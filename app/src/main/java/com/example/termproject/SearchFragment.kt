@@ -69,11 +69,12 @@ class SearchFragment : Fragment() {
                 if(selectedSubject != "Filter by Subject"){
                     query = "$query+subject:$selectedSubject"
                 }
+                Log.d("query", query)
                 val call = access.getBooks(query)
                 call.enqueue(object: Callback<JsonObject>{
                     override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                         val data = response.body()
-                        Log.d("full data", data.toString())
+//                        Log.d("full data", data.toString())
                         val booksList = data?.let { access.processBookListData(it) }
 //                        Log.d("response", booksList.toString())
                         if (booksList != null) {

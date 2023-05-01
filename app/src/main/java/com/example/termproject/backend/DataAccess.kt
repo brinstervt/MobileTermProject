@@ -79,7 +79,7 @@ class DataAccess {
         if (descriptionData != null){
             description = descriptionData.asString
         }
-        Log.d("categories", category)
+//        Log.d("categories", category)
         return BookItem(
             bookID = data.get("id").asString,
             description = description,
