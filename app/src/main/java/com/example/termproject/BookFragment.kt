@@ -191,6 +191,12 @@ class BookFragment : Fragment() {
             }
         }
 
+        internal fun removeTag(tag: TagItem){
+            tags.remove(tag)
+            access.removeTagData(tag, book?.bookID.toString(), userID.toString())
+            notifyDataSetChanged()
+        }
+
         override fun getItemCount(): Int {
             return tags.count()
         }
@@ -204,6 +210,9 @@ class BookFragment : Fragment() {
         override fun onBindViewHolder(holder: TagViewHolder, position: Int) {
             holder.view.findViewById<TextView>(R.id.tag).text = tags[position].tag
             (holder.view as CardView).setCardBackgroundColor(tags[position].color)
+            holder.view.setOnClickListener{
+                removeTag(tags[position])
+            }
         }
 
         inner class TagViewHolder(val view: View) : RecyclerView.ViewHolder(view),

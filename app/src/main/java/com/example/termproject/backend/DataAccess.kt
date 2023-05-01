@@ -146,18 +146,25 @@ class DataAccess {
             bookRef.child(tag.tag).setValue(tag.color)
             tagRef.get().addOnSuccessListener {tagTag ->
                 if(tagTag.hasChild(tag.tag)){
-                    val currentCount = tagTag.value as Int
+                    Log.d("tag value", tagTag.child(tag.tag).toString())
+                    val currentCount = tagTag.child(tag.tag).value.toString().toInt()
                     tagRef.child(tag.tag).setValue(currentCount + 1)
                 }else{
-                    tagRef.setValue(1)
+                    tagRef.child(tag.tag).setValue(1)
                 }
             }
         }
 
     }
 
-    fun removeTagData(tag:TagItem){
-
+    fun removeTagData(tag:TagItem, bookID:String, userID: String){
+        val tagRef = database.child("userInfo/$userID/tags/${tag.tag}")
+        val bookRef = database.child("userInfo/$userID/books/$bookID/tags")
+        tagRef.get().addOnSuccessListener {
+            val tagCount = it.value.toString().toInt() - 1
+            if(tagCount == 0) tagRef.removeValue() else tagRef.setValue(tagCount)
+        }
+        bookRef.removeValue()
     }
 
 
