@@ -99,11 +99,11 @@ class DataAccess {
         )
     }
 
-    fun changeShelf(bookID:String, uid:String, newShelf:String, oldShelf:String?){
+    fun changeShelf(bookID:String, uid:String, newShelf:String?, oldShelf:String?){
         Log.d("change shelf", "$newShelf,  $oldShelf")
         GlobalScope.launch{
             val dbRef = database.child("userInfo/$uid/shelves")
-            dbRef.child("$newShelf/$bookID").setValue(1)
+            if(newShelf != null) dbRef.child("$newShelf/$bookID").setValue(1)
             if(oldShelf != null) dbRef.child("$oldShelf/$bookID").removeValue()
         }
     }

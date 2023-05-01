@@ -91,10 +91,11 @@ class BookFragment : Fragment() {
         binding.shelf.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 Log.d("change", p2.toString())
-                val newShelf = binding.shelf.adapter.getItem(p2).toString()
-                Log.d("new shelf", newShelf)
-                Log.d("new shelf", currentShelf.toString())
-                if (p2 != 0 && newShelf != currentShelf){
+                var newShelf:String? = null
+                if(p2 != 0)  newShelf = binding.shelf.adapter.getItem(p2).toString()
+                Log.d("new shelf", newShelf.toString())
+                Log.d("current shelf", currentShelf.toString())
+                if (newShelf != currentShelf){
                     Log.d("entered", currentShelf.toString())
                     access.changeShelf(book?.bookID!!, userID.toString(), newShelf, currentShelf)
                     currentShelf = newShelf
