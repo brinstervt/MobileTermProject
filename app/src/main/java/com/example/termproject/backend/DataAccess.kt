@@ -3,6 +3,7 @@ package com.example.termproject.backend
 import android.util.Log
 import com.example.termproject.DTOs.BookImages
 import com.example.termproject.DTOs.BookItem
+import com.example.termproject.DTOs.TagItem
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -127,6 +128,14 @@ class DataAccess {
                 }
             }
         }
+    }
+
+    fun addTagData(tag:TagItem){
+        database.child("userInfo/tags/")
+    }
+
+    fun removeTagData(tag:TagItem){
+
     }
 
 

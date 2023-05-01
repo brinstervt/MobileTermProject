@@ -2,6 +2,7 @@ package com.example.termproject
 
 
 import android.annotation.SuppressLint
+import android.graphics.Color.parseColor
 import android.media.Rating
 import android.os.Bundle
 import android.util.Log
@@ -100,11 +101,13 @@ class BookFragment : Fragment() {
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
 
-        val tag1 = TagItem("fiction", resources.getColor(R.color.purple_200))
-        val tag2 = TagItem("classic", resources.getColor(R.color.red))
-        val tag3 = TagItem("popular", resources.getColor(R.color.teal_700))
-        val tagList = listOf(tag1, tag2, tag3)
-        tagAdapter.setTags(tagList)
+
+        binding.addTagButton.setOnClickListener{
+           tagAdapter.addTag(binding.addTagText.text.toString())
+            binding.addTagText.text.clear()
+        }
+
+
 
         val review1 = ReviewItem("John Smith", "great book I really liked it", 5.0f)
         val review2 = ReviewItem("Charlie Charleston", "I didn't like this book", 1.5f)
@@ -142,12 +145,24 @@ class BookFragment : Fragment() {
     inner class BookTagsAdapter :
         RecyclerView.Adapter<BookTagsAdapter.TagViewHolder>(){
 
-        private var tags = listOf<TagItem>()
+        private var tags = mutableListOf<TagItem>()
 
         @SuppressLint("NotifyDataSetChanged")
         internal fun setTags(tagsList:List<TagItem>) {
-            tags  = tagsList
+            tags  = tagsList as MutableList<TagItem>
             notifyDataSetChanged()
+        }
+
+        internal fun addTag(tagText:String){
+            if(tagText != "") {
+                val rand = (0..5).random()
+//                Log.d("color", colorval.toString())
+                val color = parseColor(resources.getStringArray(R.array.tag_colors)[rand])
+                val tag = TagItem(tagText, color)
+                tags.add(tag)
+                notifyDataSetChanged()
+                access.addTagData(tag)
+            }
         }
 
         override fun getItemCount(): Int {
