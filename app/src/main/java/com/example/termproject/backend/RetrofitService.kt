@@ -8,6 +8,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RetrofitService {
@@ -23,6 +24,12 @@ interface RetrofitService {
             @Query("maxResults") maxResults:Int = 10,
             @Query("key") apiKey:String = "AIzaSyDnAL3qsC3X0ZjKAP8NKRMHir7LMrNjiuo",
         ): Call<JsonObject>
+
+    @GET("volumes/{bookID}")
+    fun getBookByID(
+        @Path("bookID") bookID:String,
+        @Query("key") apiKey:String = "AIzaSyDnAL3qsC3X0ZjKAP8NKRMHir7LMrNjiuo",
+    ): Call<JsonObject>
 
 
     companion object {

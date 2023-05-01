@@ -25,6 +25,13 @@ class DataAccess {
             .getBooks(query = query)
     }
 
+    fun getBookById(id:String): Call<JsonObject> {
+        val baseUrl = "https://www.googleapis.com/books/v1/"
+
+        return RetrofitService.create(baseUrl)
+            .getBookByID(id)
+    }
+
 
     fun processBookListData(data:JsonObject):List<BookItem>{
         val dataList = data.getAsJsonArray("items")
@@ -121,6 +128,6 @@ class DataAccess {
             }
         }
     }
-    
+
 
 }

@@ -11,6 +11,8 @@ import android.widget.*
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.termproject.DTOs.BookItem
 import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentListBinding
@@ -50,10 +52,7 @@ class ListFragment : Fragment() {
             view.findNavController().navigate(R.id.action_listFragment_to_searchFragment)
         }
 
-        val bookList = view.findViewById<RecyclerView>(R.id.book_list)
-        val adapter = BookListAdapter()
-        bookList.adapter = adapter
-        bookList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+
 
         val call = access.getBooks("Great Gatsby")
         call.enqueue(object : Callback<JsonObject> {
@@ -77,6 +76,17 @@ class ListFragment : Fragment() {
 
         setupExposedDropdownMenu(shelfSelect)
 
+        val bookList = view.findViewById<RecyclerView>(R.id.book_list)
+        val adapter = BookListAdapter()
+        bookList.adapter = adapter
+        bookList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+
+        adapter.populateFromShelf("Read")
+
+
+
+
+
         return view
     }
 
@@ -96,16 +106,39 @@ class ListFragment : Fragment() {
         }
     }
 
+
+
     inner class BookListAdapter :
         RecyclerView.Adapter<BookListAdapter.BookViewHolder>(){
 
         //a list of the movie items to load into the RecyclerView
-        private var books = emptyList<BookItem>()
+        private var books = mutableListOf<BookItem>()
 
         @SuppressLint("NotifyDataSetChanged")
         internal fun setBooks(booksList: List<BookItem>) {
-            books = booksList
+            books = booksList as MutableList<BookItem>
             notifyDataSetChanged()
+        }
+
+        internal fun populateFromShelf(shelf:String){
+            database.child("userInfo/$userID/shelves/$shelf").get().addOnSuccessListener {shelf->
+                shelf.children.forEach{bookData ->
+                    val bookCall = access.getBookById(bookData.key.toString())
+                    bookCall.enqueue(object : Callback<JsonObject> {
+                        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                            val data = response.body()
+                            val result = data?.let { access.processBookData(it) }
+                            if (result != null) {
+                                books.add(result)
+                                notifyDataSetChanged()
+                            }
+                        }
+                        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                            Log.d("api", "failure   $t")
+                        }
+                    })
+                }
+            }
         }
 
         override fun getItemCount(): Int {
@@ -124,13 +157,13 @@ class ListFragment : Fragment() {
             holder.view.findViewById<TextView>(R.id.author).text = books[position].author
             holder.view.findViewById<TextView>(R.id.publish_date).text = books[position].publicationDate
             holder.view.findViewById<RatingBar>(R.id.rating).rating = books[position].rating
-//            holder.view.findViewById<ImageView>(R.id.cover_image).setImageDrawable(books[position].imageDrawable)
-//            context?.let {
-//                Glide.with(it)
-//                    .load(resources.getString(R.string.picture_base_url) + movies[position].poster_path)
-//                    .apply(RequestOptions().override(128, 128))
-//                    .into(holder.view.findViewById(R.id.poster))
-//            }
+//            holder.view.findViewById<ImageView>(R.id.cover_image)(books[position].thumbnail)
+            context?.let {
+                Glide.with(it)
+                    .load(books[position].thumbnail)
+                    .apply(RequestOptions().override(80, 120))
+                    .into(holder.view.findViewById(R.id.cover_image))
+            }
 
 
 
