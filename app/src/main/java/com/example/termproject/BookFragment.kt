@@ -80,6 +80,12 @@ class BookFragment : Fragment() {
                 .into(binding.coverImage) // Make sure you have an ImageView with the ID 'poster' in your layout
         }
 
+        val homeBtn = view.findViewById<ImageButton>(R.id.home)
+        homeBtn.setOnClickListener {
+            view.findNavController().navigate(R.id.action_bookFragment_to_listFragment)
+        }
+
+
         var currentShelf:String? = null
         //gets the current shelf of the selected book and applies to the spinner
         GlobalScope.launch{
@@ -115,18 +121,13 @@ class BookFragment : Fragment() {
         }
 
 
-
-//        val review1 = ReviewItem("John Smith", "great book I really liked it", 5.0f)
-//        val review2 = ReviewItem("Charlie Charleston", "I didn't like this book", 1.5f)
-//        val reviewList = listOf(review1, review2)
-//        reviewAdapter.setReviews(reviewList)
         reviewAdapter.setReviews(book?.bookID.toString(), userID.toString())
         val userRating = binding.userRating
         val userReviewMessage = binding.userReviewMessage
         val submitReview = binding.submitReview
         var submitted = false
         var editing = true
-
+        //checks if the user submitted a review in the past and if so populates the relevant UI elements
         database.child("userInfo/$userID/books/${book?.bookID}").get().addOnSuccessListener {
             if(it.hasChild("review")){
                 userRating.rating = it.child("review/rating").value.toString().toFloat()
@@ -138,7 +139,7 @@ class BookFragment : Fragment() {
                 editing = false
             }
         }
-
+        // submit button, if editing submits a review to the database, if not enables editing
         submitReview.setOnClickListener{
             if(editing){
                 val rating = userRating.rating
@@ -157,27 +158,14 @@ class BookFragment : Fragment() {
         }
 
 
-
-        val homeBtn = view.findViewById<ImageButton>(R.id.home)
-        homeBtn.setOnClickListener {
-            view.findNavController().navigate(R.id.action_bookFragment_to_listFragment)
-        }
-
         val reviewFilter = view.findViewById<Spinner>(R.id.review_filter)
-
+        //checks review filter spinner and filters review list on changes
         reviewFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 reviewAdapter.filterReviews(p2)
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
-
-//        context?.let {
-//                Glide.with(it)
-//                    .load(resources.getString(R.string.picture_base_url) + movies[position].poster_path)
-//                    .apply(RequestOptions().override(128, 128))
-//                    .into(holder.view.findViewById(R.id.poster))
-//            }
 
         return view
     }
@@ -268,7 +256,7 @@ class BookFragment : Fragment() {
         private var reviews = mutableListOf<ReviewItem>()
         private var reviewsFiltered = listOf<ReviewItem>()
 
-////////////////////////////// to be used when the database is up
+        //pulls reviews down from the databse
         internal fun setReviews(bookID:String, userID:String) {
             reviews.clear()
             val reviewRef = database.child("books/$bookID/reviews")
@@ -289,6 +277,7 @@ class BookFragment : Fragment() {
             }
         }
 
+        //filters reviews based on the spinner
         @SuppressLint("NotifyDataSetChanged")
         internal fun filterReviews(stars:Int){
             Log.d("filter", stars.toString())
@@ -320,12 +309,6 @@ class BookFragment : Fragment() {
             holder.view.findViewById<TextView>(R.id.message).text = reviewsFiltered[position].message
             holder.view.findViewById<RatingBar>(R.id.rating).rating = reviewsFiltered[position].rating
 
-//            holder.itemView.setOnClickListener {
-//                holder.view.findNavController().navigate(
-//                    R.id.action_searchResult_to_campgroundDetail,
-//                    bundleOf("campgroundItem" to campgrounds[position])
-//                )
-//            }
         }
 
         inner class ReviewViewHolder(val view: View) : RecyclerView.ViewHolder(view)

@@ -139,6 +139,7 @@ class DataAccess {
         }
     }
     ////////////////////////////////////////Tag Section////////////////////////////////////////////////////////
+    //checks if a user has a given tag on a book
     suspend fun tagExists(tagText:String, bookID: String, userID: String):Boolean{
         return suspendCoroutine { continuation ->
             database.child("userInfo/$userID/books/$bookID/tags").get().addOnSuccessListener {
@@ -146,7 +147,7 @@ class DataAccess {
             }
         }
     }
-
+    //adds a tag to both the users book and taglist
     fun addTagData(tag:TagItem, bookID:String, userID:String){
         Log.d("tag data", "entered")
         val tagRef = database.child("userInfo/$userID/tags")
@@ -165,7 +166,7 @@ class DataAccess {
         }
 
     }
-
+    //removes a tag from the users book copy and tag list
     fun removeTagData(tag:TagItem, bookID:String, userID: String){
         val tagRef = database.child("userInfo/$userID/tags/${tag.tag}")
         val bookRef = database.child("userInfo/$userID/books/$bookID/tags")
@@ -177,7 +178,7 @@ class DataAccess {
     }
 
     ////////////////////////////////////////Reviews Section////////////////////////////////////////////////////////
-
+    //gets a useritem from a given ID
     suspend fun getUserData(userID:String):UserItem{
         return suspendCoroutine { continuation ->
             database.child("userInfo/$userID").get().addOnSuccessListener {
@@ -188,7 +189,8 @@ class DataAccess {
             }
         }
     }
-
+    //submits a review to the database
+    //submits to both the users copy of the book and the global store for the book
     fun submitReview(rating:Float, message:String, userID:String, bookID:String){
         val userRef = database.child("userInfo/$userID/books/$bookID/review")
         val reviewRef = database.child("books/$bookID/reviews/$userID")
