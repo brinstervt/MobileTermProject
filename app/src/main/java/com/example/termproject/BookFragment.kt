@@ -268,8 +268,6 @@ class BookFragment : Fragment() {
         private var reviews = mutableListOf<ReviewItem>()
         private var reviewsFiltered = listOf<ReviewItem>()
 
-
-
 ////////////////////////////// to be used when the database is up
         internal fun setReviews(bookID:String, userID:String) {
             reviews.clear()
@@ -291,22 +289,15 @@ class BookFragment : Fragment() {
             }
         }
 
-
-       //////////////////////////////// temporary for sandbox
-//       @SuppressLint("NotifyDataSetChanged")
-//       internal fun setReviews(reviewsList: List<ReviewItem>){
-//           reviews = reviewsList as MutableList<ReviewItem>
-//           reviewsFiltered = reviews
-//           notifyDataSetChanged()
-//       }
-
         @SuppressLint("NotifyDataSetChanged")
         internal fun filterReviews(stars:Int){
+            Log.d("filter", stars.toString())
             if(stars == 0) {
                 reviewsFiltered = reviews
             }else{
                 reviewsFiltered = reviews.filter { it.rating.toInt() == stars }
             }
+            Log.d("filter", reviewsFiltered.toString())
             notifyDataSetChanged()
         }
 
