@@ -180,14 +180,28 @@ class DataAccess {
 
     suspend fun getUserData(userID:String):UserItem{
         return suspendCoroutine { continuation ->
-            val userRef = database.child("userInfo/$userID")
-            val uid = userRef.child("uid").toString()
-            val email = userRef.child("email").toString()
-            val name = userRef.child("name").toString()
-
-            continuation.resume(UserItem(uid, email, name))
+            database.child("userInfo/$userID").get().addOnSuccessListener {
+                val uid = it.child("uid").toString()
+                val email = it.child("email").value.toString()
+                val name = it.child("name").value.toString()
+                continuation.resume(UserItem(uid, email, name))
+            }
         }
     }
+
+    fun submitReview(rating:Float, message:String, userID:String, bookID:String){
+        val userRef = database.child("userInfo/$userID/books/$bookID/review")
+        val reviewRef = database.child("books/$bookID/reviews/$userID")
+        GlobalScope.launch{
+            val name = getUserData(userID).name
+            userRef.child("rating").setValue(rating)
+            userRef.child("message").setValue(message)
+            reviewRef.child("rating").setValue(rating)
+            reviewRef.child("message").setValue(message)
+            reviewRef.child("name").setValue(name)
+        }
+    }
+
 
 
 

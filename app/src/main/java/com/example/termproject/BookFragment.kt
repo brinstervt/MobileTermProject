@@ -121,6 +121,41 @@ class BookFragment : Fragment() {
 //        val reviewList = listOf(review1, review2)
 //        reviewAdapter.setReviews(reviewList)
         reviewAdapter.setReviews(book?.bookID.toString(), userID.toString())
+        val userRating = binding.userRating
+        val userReviewMessage = binding.userReviewMessage
+        val submitReview = binding.submitReview
+        var submitted = false
+        var editing = true
+
+        database.child("userInfo/$userID/books/${book?.bookID}").get().addOnSuccessListener {
+            if(it.hasChild("review")){
+                userRating.rating = it.child("review/rating").value.toString().toFloat()
+                userRating.setIsIndicator(true)
+                userReviewMessage.setText(it.child("review/message").value.toString())
+                userReviewMessage.isEnabled = false
+                submitReview.text = "Edit"
+                submitted = true
+                editing = false
+            }
+        }
+
+        submitReview.setOnClickListener{
+            if(editing){
+                val rating = userRating.rating
+                val message = userReviewMessage.text.toString()
+                access.submitReview(rating, message, userID.toString(), book?.bookID.toString())
+                editing = false
+                submitReview.text = "Edit"
+                userRating.setIsIndicator(true)
+                userReviewMessage.isEnabled = false
+            }else{
+                editing = true
+                submitReview.text = "Submit"
+                userRating.setIsIndicator(false)
+                userReviewMessage.isEnabled = true
+            }
+        }
+
 
 
         val homeBtn = view.findViewById<ImageButton>(R.id.home)
