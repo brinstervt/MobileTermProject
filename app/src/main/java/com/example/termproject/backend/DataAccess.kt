@@ -138,6 +138,15 @@ class DataAccess {
             }
         }
     }
+
+//    suspend fun getAllShelves(userID:String):List<String>{
+//        database.child()
+//    }
+
+    fun addShelf(name:String, userID:String){
+        database.child("userInfo/$userID/shelves/$name/init").setValue(1)
+    }
+
     ////////////////////////////////////////Tag Section////////////////////////////////////////////////////////
     //checks if a user has a given tag on a book
     suspend fun tagExists(tagText:String, bookID: String, userID: String):Boolean{

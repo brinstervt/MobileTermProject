@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import android.widget.AdapterView.OnItemClickListener
 import androidx.core.os.bundleOf
 import androidx.core.view.get
 import androidx.navigation.findNavController
@@ -26,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.JsonObject
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,6 +39,7 @@ class ListFragment : Fragment() {
     private lateinit var database: DatabaseReference
     private val userID = Firebase.auth.currentUser?.uid
     private val access = DataAccess()
+    private var shelfList:MutableList<String> = mutableListOf("All Books", "Currently Reading", "To Read", "Read")
 
     @Suppress("DEPRECATION")
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -75,27 +79,54 @@ class ListFragment : Fragment() {
             view.findNavController().navigate(R.id.action_listFragment_to_settingsFragment)
         }
 
-
-
-        setupExposedDropdownMenu(shelfSelect)
-
         val bookList = view.findViewById<RecyclerView>(R.id.book_list)
-        val adapter = BookListAdapter()
-        bookList.adapter = adapter
+        val bookAdapter = BookListAdapter()
+        bookList.adapter = bookAdapter
         bookList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
-//        adapter.populateFromShelf("Read")
-        adapter.populateAllBooks()
-
-        view.findViewById<AutoCompleteTextView>(R.id.autocomplete).setOnItemClickListener { adapterView, view, i, l ->
-            val shelf = (adapterView.get(i) as MaterialTextView).text.toString()
-            Log.d("clicker", shelf)
-            if(shelf == "All Books"){
-                adapter.populateAllBooks()
-            }else{
-                adapter.populateFromShelf(shelf)
+        setupExposedDropdownMenu(shelfSelect, bookAdapter)
+        GlobalScope.launch{
+            database.child("userInfo/$userID/shelves").get().addOnSuccessListener {
+                it.children.forEach {shelf ->
+                    if(!shelfList.contains(shelf.key.toString())) {
+                        shelfList.add(shelf.key.toString())
+                        activity?.runOnUiThread {
+                            setupExposedDropdownMenu(shelfSelect, bookAdapter)
+                        }
+                    }
+                }
             }
         }
+
+
+
+//        adapter.populateFromShelf("Read")
+        bookAdapter.populateAllBooks()
+
+        val adpaterOnClick = OnItemClickListener { adapterView, view, i, l ->
+            Log.d("clicking", "entered")
+            val shelf = (adapterView.get(i) as MaterialTextView).text.toString()
+            Log.d("clicker", shelf)
+            if (shelf == "All Books") {
+                bookAdapter.populateAllBooks()
+            } else {
+                bookAdapter.populateFromShelf(shelf)
+            }
+        }
+
+        binding.addShelfButton.setOnClickListener {
+            val name = binding.addShelfText.text.toString()
+            if (name.isNotBlank() && !shelfList.contains(name)){
+                access.addShelf(name, userID.toString())
+                binding.addShelfText.text.clear()
+                shelfList.add(name)
+                setupExposedDropdownMenu(shelfSelect, bookAdapter)
+            }
+        }
+
+//        OnItemClickListener { adapterView, view, i, l ->
+//
+//        }
 
 //        shelfSelect.setOnFocusChangeListener { view, b ->
 //            Log.d("focus change", "success")
@@ -111,8 +142,8 @@ class ListFragment : Fragment() {
         return view
     }
 
-    private fun setupExposedDropdownMenu(shelfSelect:TextInputLayout) {
-        val items = resources.getStringArray(R.array.dropdown)
+    private fun setupExposedDropdownMenu(shelfSelect:TextInputLayout, bookAdapter:BookListAdapter) {
+        val items = shelfList
         val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_menu_item, items)
 
         val autoCompleteTextView = shelfSelect.editText as? AutoCompleteTextView
@@ -121,7 +152,15 @@ class ListFragment : Fragment() {
         // Set the first item as the default selected item
         autoCompleteTextView?.setText(adapter.getItem(0), false)
 
-        autoCompleteTextView?.setOnItemClickListener { _, _, position, _ ->
+        autoCompleteTextView?.setOnItemClickListener { adapterView, _, position, _ ->
+            Log.d("clicking", "entered")
+            val shelf = (adapterView[position] as MaterialTextView).text.toString()
+            Log.d("clicker", shelf)
+            if (shelf == "All Books") {
+                bookAdapter.populateAllBooks()
+            } else {
+                bookAdapter.populateFromShelf(shelf)
+            }
         }
     }
 

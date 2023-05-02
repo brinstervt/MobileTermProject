@@ -280,13 +280,11 @@ class BookFragment : Fragment() {
         //filters reviews based on the spinner
         @SuppressLint("NotifyDataSetChanged")
         internal fun filterReviews(stars:Int){
-            Log.d("filter", stars.toString())
-            if(stars == 0) {
-                reviewsFiltered = reviews
+            reviewsFiltered = if(stars == 0) {
+                reviews
             }else{
-                reviewsFiltered = reviews.filter { it.rating.toInt() == stars }
+                reviews.filter { it.rating.toInt() == stars }
             }
-            Log.d("filter", reviewsFiltered.toString())
             notifyDataSetChanged()
         }
 
