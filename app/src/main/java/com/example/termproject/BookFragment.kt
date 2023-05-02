@@ -26,6 +26,7 @@ import com.example.termproject.DTOs.TagItem
 import com.example.termproject.backend.DataAccess
 import com.example.termproject.databinding.FragmentBookBinding
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -115,10 +116,11 @@ class BookFragment : Fragment() {
 
 
 
-        val review1 = ReviewItem("John Smith", "great book I really liked it", 5.0f)
-        val review2 = ReviewItem("Charlie Charleston", "I didn't like this book", 1.5f)
-        val reviewList = listOf(review1, review2)
-        reviewAdapter.setReviews(reviewList)
+//        val review1 = ReviewItem("John Smith", "great book I really liked it", 5.0f)
+//        val review2 = ReviewItem("Charlie Charleston", "I didn't like this book", 1.5f)
+//        val reviewList = listOf(review1, review2)
+//        reviewAdapter.setReviews(reviewList)
+        reviewAdapter.setReviews(book?.bookID.toString(), userID.toString())
 
 
         val homeBtn = view.findViewById<ImageButton>(R.id.home)
@@ -228,37 +230,40 @@ class BookFragment : Fragment() {
         RecyclerView.Adapter<ReviewListAdapter.ReviewViewHolder>(){
 
 //        private var reviews = mutableListOf<ReviewItem>()
-        private var reviews = listOf<ReviewItem>()
+        private var reviews = mutableListOf<ReviewItem>()
         private var reviewsFiltered = listOf<ReviewItem>()
 
 
 
-//////////////////////////////// to be used when the database is up
-//        internal fun setReviews(reviewData: DataSnapshot, userID:String) {
-//            val children = reviewData.children
-////            val length = reviewData.childrenCount
-//
-//            children.forEach() { review ->
-//                if(review.key != userID && review.key != "reviewCount" && review.key != "reviewAverage") {
-//                    val reviewName = review.child("name").value.toString()
-//                    val reviewMessage = review.child("message").value.toString()
-//                    val reviewRating = review.child("rating").value.toString().toFloat()
-//
-//                    reviews.add(ReviewItem(reviewName, reviewMessage, reviewRating))
-//                }
-//            }
-//            reviewsFiltered = reviews
-//            notifyDataSetChanged()
-//        }
+////////////////////////////// to be used when the database is up
+        internal fun setReviews(bookID:String, userID:String) {
+            reviews.clear()
+            val reviewRef = database.child("books/$bookID/reviews")
+            reviewRef.get().addOnSuccessListener {
+                it.children.forEach() { review ->
+                    if(review.key != userID) {
+                        val reviewName = review.child("name").value.toString()
+                        val reviewMessage = review.child("message").value.toString()
+                        val reviewRating = review.child("rating").value.toString().toFloat()
+
+                        reviews.add(ReviewItem(reviewName, reviewMessage, reviewRating))
+                        reviewsFiltered = reviews
+                        activity?.runOnUiThread {
+                            notifyDataSetChanged()
+                        }
+                    }
+                }
+            }
+        }
 
 
        //////////////////////////////// temporary for sandbox
-       @SuppressLint("NotifyDataSetChanged")
-       internal fun setReviews(reviewsList: List<ReviewItem>){
-           reviews = reviewsList
-           reviewsFiltered = reviews
-           notifyDataSetChanged()
-       }
+//       @SuppressLint("NotifyDataSetChanged")
+//       internal fun setReviews(reviewsList: List<ReviewItem>){
+//           reviews = reviewsList as MutableList<ReviewItem>
+//           reviewsFiltered = reviews
+//           notifyDataSetChanged()
+//       }
 
         @SuppressLint("NotifyDataSetChanged")
         internal fun filterReviews(stars:Int){

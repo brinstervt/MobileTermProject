@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.termproject.DTOs.BookImages
 import com.example.termproject.DTOs.BookItem
 import com.example.termproject.DTOs.TagItem
+import com.example.termproject.DTOs.UserItem
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -17,6 +18,9 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class DataAccess {
+
+    ////////////////////////////////////////API Section////////////////////////////////////////////////////////
+
 
     private val database = Firebase.database.reference
     fun getBooks(query:String): Call<JsonObject> {
@@ -33,6 +37,8 @@ class DataAccess {
             .getBookByID(id)
     }
 
+
+    ////////////////////////////////////////Book Section////////////////////////////////////////////////////////
 
     fun processBookListData(data:JsonObject):List<BookItem>{
         val dataList = data.getAsJsonArray("items")
@@ -108,6 +114,9 @@ class DataAccess {
         )
     }
 
+    ////////////////////////////////////////Shelf Section////////////////////////////////////////////////////////
+
+
     // takes two shelves and adjusts the database for the given book and user
     fun changeShelf(bookID:String, userID:String, newShelf:String?, oldShelf:String?){
 //        Log.d("change shelf", "$newShelf,  $oldShelf")
@@ -129,7 +138,7 @@ class DataAccess {
             }
         }
     }
-
+    ////////////////////////////////////////Tag Section////////////////////////////////////////////////////////
     suspend fun tagExists(tagText:String, bookID: String, userID: String):Boolean{
         return suspendCoroutine { continuation ->
             database.child("userInfo/$userID/books/$bookID/tags").get().addOnSuccessListener {
@@ -166,6 +175,20 @@ class DataAccess {
         }
         bookRef.removeValue()
     }
+
+    ////////////////////////////////////////Reviews Section////////////////////////////////////////////////////////
+
+    suspend fun getUserData(userID:String):UserItem{
+        return suspendCoroutine { continuation ->
+            val userRef = database.child("userInfo/$userID")
+            val uid = userRef.child("uid").toString()
+            val email = userRef.child("email").toString()
+            val name = userRef.child("name").toString()
+
+            continuation.resume(UserItem(uid, email, name))
+        }
+    }
+
 
 
 }
