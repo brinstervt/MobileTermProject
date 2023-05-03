@@ -24,6 +24,7 @@ class DataAccess {
 
     private val database = Firebase.database.reference
     fun getBooks(query:String): Call<JsonObject> {
+        Log.d("Sending query", query)
         val baseUrl = "https://www.googleapis.com/books/v1/"
 
         return RetrofitService.create(baseUrl)
@@ -121,7 +122,7 @@ class DataAccess {
         )
     }
 
-    private fun removeBook(bookID:String, userID:String){
+    fun removeBook(bookID:String, userID:String){
         database.child("userInfo/$userID/books/$bookID").removeValue()
     }
 
@@ -133,9 +134,10 @@ class DataAccess {
 //        Log.d("change shelf", "$newShelf,  $oldShelf")
         GlobalScope.launch{
             val shelfRef = database.child("userInfo/$userID/shelves")
+            val bookRef = database.child("userInfo/$userID/books/$bookID/shelf")
             if(newShelf != null) shelfRef.child("$newShelf/$bookID").setValue(1)
             if(oldShelf != null) shelfRef.child("$oldShelf/$bookID").removeValue()
-            database.child("userInfo/$userID/books/$bookID/shelf").setValue(newShelf)
+            bookRef.setValue(newShelf)
         }
     }
 

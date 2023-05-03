@@ -18,7 +18,7 @@ interface RetrofitService {
         fun getBooks(
             @Query("q") query:String,
             @Query("projection") projection:String = "full",
-            @Query("printType") printType:String = "books",
+//            @Query("printType") printType:String = "books",
 ////            @Query("filter") filter:String = "partial",
 ////            @Query("langRestrict") language:String="en",
             @Query("maxResults") maxResults:Int = 10,

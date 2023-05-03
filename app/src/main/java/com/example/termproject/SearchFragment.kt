@@ -65,7 +65,7 @@ class SearchFragment : Fragment() {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 val selectedSearchType = searchType.selectedItem.toString()
                 val selectedSubject = subjectSpin.selectedItem.toString()
-                var query = searchType(selectedSearchType) + ":$p0"
+                var query = " " + searchType(selectedSearchType) + ":$p0"
                 if(selectedSubject != "Filter by Subject"){
                     query = "$query+subject:$selectedSubject"
                 }
