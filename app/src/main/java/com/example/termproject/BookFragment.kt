@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.text.HtmlCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +31,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.ms.square.android.expandabletextview.ExpandableTextView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -41,7 +43,7 @@ class BookFragment : Fragment() {
     private val userID = Firebase.auth.currentUser?.uid
     private lateinit var database: DatabaseReference
     private val access = DataAccess()
-    private var shelfList:MutableList<String> = mutableListOf("All Books", "Currently Reading", "To Read", "Read")
+    private var shelfList:MutableList<String> = mutableListOf("No Shelf", "Currently Reading", "To Read", "Read")
     private var currentShelf:String? = null
 
 
@@ -59,7 +61,15 @@ class BookFragment : Fragment() {
         binding.title.text = book?.title
         binding.author.text = book?.author
         binding.bookRating.rating = book?.rating ?: 0f
-        binding.description.text = book?.description
+
+        val styledText = HtmlCompat.fromHtml(
+            book?.description!!,
+            HtmlCompat.FROM_HTML_MODE_COMPACT,
+            null,
+            null
+        )
+        binding.description.text = styledText
+
         binding.bookRating.rating = book?.rating!!
         context?.let {
             Glide.with(it)
@@ -233,7 +243,7 @@ class BookFragment : Fragment() {
                         toast.show()
                     }
                 }else{
-                    val rand = (0..5).random()
+                    val rand = (0..11).random()
                     val color = parseColor(resources.getStringArray(R.array.tag_colors)[rand])
                     val tag = TagItem(tagText, color)
                     tags.add(tag)

@@ -77,9 +77,11 @@ class DataAccess {
             pageCount = pageCountData.asInt
         }
         var thumbnail = ""
-        val thumbNailData = imageLinks.get("thumbnail")
-        if (thumbNailData != null){
-            thumbnail = thumbNailData.asString
+        if(imageLinks != null) {
+            val thumbNailData = imageLinks.get("thumbnail")
+            if (thumbNailData != null) {
+                thumbnail = thumbNailData.asString
+            }
         }
         var description = ""
         val descriptionData = volumeInfo.get("description")
@@ -119,6 +121,10 @@ class DataAccess {
         )
     }
 
+    private fun removeBook(bookID:String, userID:String){
+        database.child("userInfo/$userID/books/$bookID").removeValue()
+    }
+
     ////////////////////////////////////////Shelf Section////////////////////////////////////////////////////////
 
 
@@ -150,6 +156,16 @@ class DataAccess {
 
     fun addShelf(name:String, userID:String){
         database.child("userInfo/$userID/shelves/$name/init").setValue(1)
+    }
+
+    fun removeShelf(name:String, userID:String){
+        val shelfRef = database.child("userInfo/$userID/shelves/$name")
+        shelfRef.get().addOnSuccessListener {shelf->
+            shelf.children.forEach {book ->
+                removeBook(book.key.toString(), userID)
+            }
+        }
+        shelfRef.removeValue()
     }
 
     ////////////////////////////////////////Tag Section////////////////////////////////////////////////////////

@@ -53,11 +53,17 @@
         <item>science</item>
     </string-array>
     <string-array name="tag_colors">
-        <item>#FF0000</item>
-        <item>#FFFF00</item>
-        <item>#FF00FF</item>
-        <item>#00FF00</item>
-        <item>#00FFFF</item>
-        <item>#0000FF</item>
+        <item>#093145</item>
+        <item>#3c6478</item>
+        <item>#107896</item>
+        <item>#43abc9</item>
+        <item>#a29356</item>
+        <item>#a3b86c</item>
+        <item>#d3b53d</item>
+        <item>#ebc944</item>
+        <item>#c2571a</item>
+        <item>#f26d21</item>
+        <item>#9a2617</item>
+        <item>#c02f1d</item>
     </string-array>
 </resources>
