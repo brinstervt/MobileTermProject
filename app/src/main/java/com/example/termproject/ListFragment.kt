@@ -47,44 +47,43 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //initialization
         binding = FragmentListBinding.inflate(layoutInflater)
         val view = binding.root
-
         database = Firebase.database.reference
-
-        val searchBtn = view.findViewById<ImageButton>(R.id.search)
-        val shelfSelect = view.findViewById<TextInputLayout>(R.id.shelf_select)
-
-        searchBtn.setOnClickListener{
-            view.findNavController().navigate(R.id.action_listFragment_to_searchFragment)
-        }
-
-
-
-        val call = access.getBooks("Great Gatsby")
-        call.enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                val data = response.body()
-
-//                Log.d("api", data.toString())
-            }
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-//                Log.d("api", "failure   $t")
-            }
-        })
-
-
-        val settingsButton=view.findViewById<ImageButton>(R.id.settings_button)
-        settingsButton.setOnClickListener {
-            view.findNavController().navigate(R.id.action_listFragment_to_settingsFragment)
-        }
-
-        val bookList = view.findViewById<RecyclerView>(R.id.book_list)
+        //initialize views
+        val searchBtn = binding.search
+        val shelfSelect = binding.shelfSelect
+        val settingsButton=binding.settingsButton
+        //initialize recyclers
+        val bookList = binding.bookList
         val bookAdapter = BookListAdapter()
         bookList.adapter = bookAdapter
         bookList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
+        //initialize top buttons
+        searchBtn.setOnClickListener{
+            view.findNavController().navigate(R.id.action_listFragment_to_searchFragment)
+        }
+        settingsButton.setOnClickListener {
+            view.findNavController().navigate(R.id.action_listFragment_to_settingsFragment)
+        }
+        //add shelf
+        binding.addShelfButton.setOnClickListener {
+            val name = binding.addShelfText.text.toString()
+            if (name.isNotBlank() && !shelfList.contains(name)){
+                access.addShelf(name, userID.toString())
+                binding.addShelfText.text.clear()
+                shelfList.add(name)
+                setupExposedDropdownMenu(shelfSelect, bookAdapter)
+            }
+        }
+
+        //initially setup dropdown with basic shelves
         setupExposedDropdownMenu(shelfSelect, bookAdapter)
+        //initially populates the list of books
+        bookAdapter.populateAllBooks()
+        // retrieve and set additional custom shelves
         GlobalScope.launch{
             database.child("userInfo/$userID/shelves").get().addOnSuccessListener {
                 it.children.forEach {shelf ->
@@ -97,47 +96,6 @@ class ListFragment : Fragment() {
                 }
             }
         }
-
-
-
-//        adapter.populateFromShelf("Read")
-        bookAdapter.populateAllBooks()
-
-        val adpaterOnClick = OnItemClickListener { adapterView, view, i, l ->
-//            Log.d("clicking", "entered")
-            val shelf = (adapterView.get(i) as MaterialTextView).text.toString()
-//            Log.d("clicker", shelf)
-            if (shelf == "All Books") {
-                bookAdapter.populateAllBooks()
-            } else {
-                bookAdapter.populateFromShelf(shelf)
-            }
-        }
-
-        binding.addShelfButton.setOnClickListener {
-            val name = binding.addShelfText.text.toString()
-            if (name.isNotBlank() && !shelfList.contains(name)){
-                access.addShelf(name, userID.toString())
-                binding.addShelfText.text.clear()
-                shelfList.add(name)
-                setupExposedDropdownMenu(shelfSelect, bookAdapter)
-            }
-        }
-
-//        OnItemClickListener { adapterView, view, i, l ->
-//
-//        }
-
-//        shelfSelect.setOnFocusChangeListener { view, b ->
-//            Log.d("focus change", "success")
-//
-//            if(!b){
-//                val text = shelfSelect.editText?.text
-//                Log.d("spinner text", text.toString())
-//            }
-//        }
-
-
 
         return view
     }
@@ -153,14 +111,10 @@ class ListFragment : Fragment() {
         autoCompleteTextView?.setText(adapter.getItem(0), false)
 
         autoCompleteTextView?.setOnItemClickListener { adapterView, _, position, _ ->
-            Log.d("clicking", "entered")
             val shelf = (adapterView[position] as MaterialTextView).text.toString()
-            Log.d("clicker", shelf)
-            if (shelf == "All Books") {
-                bookAdapter.populateAllBooks()
-            } else {
-                bookAdapter.populateFromShelf(shelf)
-            }
+
+            if (shelf == "All Books") { bookAdapter.populateAllBooks() }
+                else { bookAdapter.populateFromShelf(shelf) }
         }
     }
 
@@ -169,27 +123,17 @@ class ListFragment : Fragment() {
     inner class BookListAdapter :
         RecyclerView.Adapter<BookListAdapter.BookViewHolder>(){
 
-        //a list of the movie items to load into the RecyclerView
         private var books = mutableListOf<BookItem>()
-
-        @SuppressLint("NotifyDataSetChanged")
-        internal fun setBooks(booksList: List<BookItem>) {
-            books = booksList as MutableList<BookItem>
-            notifyDataSetChanged()
-        }
 
         internal fun populateAllBooks(){
             books.clear()
             database.child("userInfo/$userID/books").get().addOnSuccessListener{
-                var max = 20
+                var max = 20 //sets max results
                 it.children.forEach { bookData ->
                     if(max > 0) {
                         val bookCall = access.getBookById(bookData.key.toString())
                         bookCall.enqueue(object : Callback<JsonObject> {
-                            override fun onResponse(
-                                call: Call<JsonObject>,
-                                response: Response<JsonObject>
-                            ) {
+                            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                                 val data = response.body()
                                 val result = data?.let { access.processBookData(it) }
                                 if (result != null) {
@@ -197,9 +141,7 @@ class ListFragment : Fragment() {
                                     notifyDataSetChanged()
                                 }
                             }
-                            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                                Log.d("api", "failure   $t")
-                            }
+                            override fun onFailure(call: Call<JsonObject>, t: Throwable) { Log.d("api", "failure   $t")}
                         })
                         max--
                     }
@@ -209,7 +151,6 @@ class ListFragment : Fragment() {
         }
 
         internal fun populateFromShelf(shelf:String){
-            Log.d("filtering", "entered")
             books.clear()
             database.child("userInfo/$userID/shelves/$shelf").get().addOnSuccessListener {shelf->
                 shelf.children.forEach{bookData ->
@@ -223,9 +164,7 @@ class ListFragment : Fragment() {
                                 notifyDataSetChanged()
                             }
                         }
-                        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                            Log.d("api", "failure   $t")
-                        }
+                        override fun onFailure(call: Call<JsonObject>, t: Throwable) { Log.d("api", "failure   $t") }
                     })
                 }
             }
@@ -243,27 +182,21 @@ class ListFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
-
             holder.view.findViewById<TextView>(R.id.title).text = books[position].title
             holder.view.findViewById<TextView>(R.id.author).text = books[position].author
             holder.view.findViewById<TextView>(R.id.publish_date).text = books[position].publicationDate
             holder.view.findViewById<RatingBar>(R.id.rating).rating = books[position].rating
-//            holder.view.findViewById<ImageView>(R.id.cover_image)(books[position].thumbnail)
             context?.let {
                 Glide.with(it)
                     .load(books[position].thumbnail)
                     .apply(RequestOptions().override(80, 120))
                     .into(holder.view.findViewById(R.id.cover_image))
             }
-
-
-
             holder.itemView.setOnClickListener {
                 holder.view.findNavController().navigate(R.id.action_listFragment_to_bookFragment,
                     bundleOf("book" to books[position]))
             }
         }
-
         inner class BookViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
 

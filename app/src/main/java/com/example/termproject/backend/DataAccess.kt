@@ -86,13 +86,18 @@ class DataAccess {
         if (descriptionData != null){
             description = descriptionData.asString
         }
+        var publishedDate = ""
+        val publishedDateData = volumeInfo.get("publishedDate")
+        if (publishedDateData != null){
+            publishedDate = publishedDateData.asString
+        }
 //        Log.d("categories", category)
         return BookItem(
             bookID = data.get("id").asString,
             description = description,
             title = volumeInfo.get("title").asString,
             author = volumeInfo.getAsJsonArray("authors").get(0).asString,
-            publicationDate = volumeInfo.get("publishedDate").asString,
+            publicationDate = publishedDate,
             pageCount = pageCount,
             category = category,
             ratingCount = ratingCount,

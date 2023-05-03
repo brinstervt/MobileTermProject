@@ -41,6 +41,8 @@ class BookFragment : Fragment() {
     private val userID = Firebase.auth.currentUser?.uid
     private lateinit var database: DatabaseReference
     private val access = DataAccess()
+    private var shelfList:MutableList<String> = mutableListOf("All Books", "Currently Reading", "To Read", "Read")
+    private var currentShelf:String? = null
 
 
     @Suppress("DEPRECATION")
@@ -48,45 +50,44 @@ class BookFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
+        //initialization
         binding = FragmentBookBinding.inflate(layoutInflater)
         val view = binding.root
-
-        book = this.arguments?.getParcelable("book")
         database = Firebase.database.reference
-
-
-        val tagRecycler = view.findViewById(R.id.tag_list) as RecyclerView
-        val tagAdapter = BookTagsAdapter()
-        tagRecycler.adapter = tagAdapter
-        tagRecycler.layoutManager = StaggeredGridLayoutManager(4, RecyclerView.VERTICAL)
-        tagAdapter.setTags(book?.bookID.toString())
-
-        val reviewRecycler = view.findViewById(R.id.review_list) as RecyclerView
-        val reviewAdapter = ReviewListAdapter()
-        reviewRecycler.adapter = reviewAdapter
-        reviewRecycler.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-
+        book = this.arguments?.getParcelable("book")
+        //initialize views
         binding.title.text = book?.title
         binding.author.text = book?.author
         binding.bookRating.rating = book?.rating ?: 0f
         binding.description.text = book?.description
         binding.bookRating.rating = book?.rating!!
-
         context?.let {
             Glide.with(it)
                 .load(book?.thumbnail)
                 .apply(RequestOptions().override(128, 128))
                 .into(binding.coverImage) // Make sure you have an ImageView with the ID 'poster' in your layout
         }
+        //initialize recyclers
+        //tags
+        val tagRecycler = binding.tagList
+        val tagAdapter = BookTagsAdapter()
+        tagRecycler.adapter = tagAdapter
+        tagRecycler.layoutManager = StaggeredGridLayoutManager(4, RecyclerView.VERTICAL)
+        tagAdapter.setTags(book?.bookID.toString())
+        //reviews
+        val reviewRecycler = binding.reviewList
+        val reviewAdapter = ReviewListAdapter()
+        reviewRecycler.adapter = reviewAdapter
+        reviewRecycler.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
-        val homeBtn = view.findViewById<ImageButton>(R.id.home)
+
+
+
+        val homeBtn = binding.home
         homeBtn.setOnClickListener {
             view.findNavController().navigate(R.id.action_bookFragment_to_listFragment)
         }
 
-
-        var currentShelf:String? = null
         //gets the current shelf of the selected book and applies to the spinner
         GlobalScope.launch{
             val shelf = access.getShelf(book?.bookID.toString(), userID.toString())
@@ -125,7 +126,6 @@ class BookFragment : Fragment() {
         val userRating = binding.userRating
         val userReviewMessage = binding.userReviewMessage
         val submitReview = binding.submitReview
-        var submitted = false
         var editing = true
         //checks if the user submitted a review in the past and if so populates the relevant UI elements
         database.child("userInfo/$userID/books/${book?.bookID}").get().addOnSuccessListener {
@@ -135,7 +135,6 @@ class BookFragment : Fragment() {
                 userReviewMessage.setText(it.child("review/message").value.toString())
                 userReviewMessage.isEnabled = false
                 submitReview.text = "Edit"
-                submitted = true
                 editing = false
             }
         }
@@ -158,7 +157,7 @@ class BookFragment : Fragment() {
         }
 
 
-        val reviewFilter = view.findViewById<Spinner>(R.id.review_filter)
+        val reviewFilter = binding.reviewFilter
         //checks review filter spinner and filters review list on changes
         reviewFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -167,10 +166,40 @@ class BookFragment : Fragment() {
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
 
+        GlobalScope.launch{
+            database.child("userInfo/$userID/shelves").get().addOnSuccessListener {
+                it.children.forEach {shelf ->
+                    if(!shelfList.contains(shelf.key.toString())) {
+                        shelfList.add(shelf.key.toString())
+                        activity?.runOnUiThread {
+                            setDropdown()
+                        }
+                    }
+                }
+            }
+        }
+
+
+
         return view
     }
 
+    fun setDropdown(){
+        val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_menu_item, shelfList)
+        binding.shelf.adapter = adapter
 
+        binding.shelf.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                var newShelf:String? = null
+                if(p2 != 0)  newShelf = binding.shelf.adapter.getItem(p2).toString()
+                if (newShelf != currentShelf){
+                    access.changeShelf(book?.bookID!!, userID.toString(), newShelf, currentShelf)
+                    currentShelf = newShelf
+                }
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+        }
+    }
 
     inner class BookTagsAdapter :
         RecyclerView.Adapter<BookTagsAdapter.TagViewHolder>(){
