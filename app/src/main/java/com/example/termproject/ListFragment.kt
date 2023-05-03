@@ -104,9 +104,9 @@ class ListFragment : Fragment() {
         bookAdapter.populateAllBooks()
 
         val adpaterOnClick = OnItemClickListener { adapterView, view, i, l ->
-            Log.d("clicking", "entered")
+//            Log.d("clicking", "entered")
             val shelf = (adapterView.get(i) as MaterialTextView).text.toString()
-            Log.d("clicker", shelf)
+//            Log.d("clicker", shelf)
             if (shelf == "All Books") {
                 bookAdapter.populateAllBooks()
             } else {
@@ -205,10 +205,11 @@ class ListFragment : Fragment() {
                     }
                 }
             }
-
+            notifyDataSetChanged()
         }
 
         internal fun populateFromShelf(shelf:String){
+            Log.d("filtering", "entered")
             books.clear()
             database.child("userInfo/$userID/shelves/$shelf").get().addOnSuccessListener {shelf->
                 shelf.children.forEach{bookData ->
@@ -228,6 +229,7 @@ class ListFragment : Fragment() {
                     })
                 }
             }
+            notifyDataSetChanged()
         }
 
         override fun getItemCount(): Int {
