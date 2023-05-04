@@ -13,4 +13,8 @@ class ViewModel (application: Application) : AndroidViewModel(application) {
 
     val shelfList = listOf<String>()
 
+    fun getShelves(){
+
+    }
+
 }
