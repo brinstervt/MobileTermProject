@@ -126,19 +126,6 @@ class BookFragment : Fragment() {
                 }
             }
         }
-//        //if the spinner is changed adjust the books shelf in the database accordingly
-//        binding.shelf.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-//                var newShelf:String? = null
-//                if(p2 != 0)  newShelf = binding.shelf.adapter.getItem(p2).toString()
-//                else access.removeBook(book?.bookID.toString(), userID.toString())
-//                if (newShelf != currentShelf){
-//                    access.changeShelf(book?.bookID!!, userID.toString(), newShelf, currentShelf)
-//                    currentShelf = newShelf
-//                }
-//            }
-//            override fun onNothingSelected(p0: AdapterView<*>?) {}
-//        }
 
 
         binding.addTagButton.setOnClickListener{
@@ -181,7 +168,6 @@ class BookFragment : Fragment() {
             }
         }
 
-
         val reviewFilter = binding.reviewFilter
         //checks review filter spinner and filters review list on changes
         reviewFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
@@ -190,11 +176,6 @@ class BookFragment : Fragment() {
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
-
-
-
-
-
         return view
     }
 
